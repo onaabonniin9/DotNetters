@@ -1,0 +1,17 @@
+# Archivos temporales de Visual Studio
+.vs/
+**/.vs/
+
+# Archivos generados al compilar
+bin/
+obj/
+**/bin/
+**/obj/
+
+# Configuración personal
+*.user
+*.suo
+
+# Archivos sensibles
+.env
+.env.*
