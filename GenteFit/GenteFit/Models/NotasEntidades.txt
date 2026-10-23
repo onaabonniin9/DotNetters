@@ -1,0 +1,10 @@
+NOTAS SOBRE LAS ENTIDADES (Ona)
+
+1. He usado string.Empty en los atributos de tipo string para que contengan una string vacio desde el principio y evitar 
+  errores con null.
+2. Tenemos que decidir como proteger los atributos contraseña de Usuario y IBAN de Cliente.
+3. He puesto todos los metodos propios de cada clase que aparecian en el UML comentados sin implementar para tenerlos
+  a mano y que no se nos olvide ninguno. Pero yo dejaría dentro de las propias clases los metodos que tengan que ver con
+  la propia entidad y los de operaciones CRUD separados en otro sitio.
+4. He utilizado null! entre relaciones de clases que alomejor al principio no tienen un valor asignado para que EFCore
+  leugo cargue o asigne la entidad relacionada.
