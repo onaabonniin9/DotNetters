@@ -14,8 +14,18 @@ public class ReservaService
         _context = context;
     }
 
-    public async Task<Reserva> CrearAsync(Reserva reserva)
+    public async Task<Reserva> CrearAsync(int clienteId, int sesionId)
     {
+        var cliente = await _context.Clientes.FindAsync(clienteId);
+
+        if (cliente is null)
+            throw new ArgumentException("El cliente  no existe.");
+
+        var sesion = await _context.Sesiones.FindAsync(sesionId);
+
+        if (sesion is null)
+            throw new ArgumentException("La sesión no existe.");
+
         bool yaTieneReserva = await _context.Set<Reserva>().AnyAsync(r => // Asegurarnos de que solo exista una reserva
             r.Cliente.Id == reserva.Cliente.Id &&
             r.Sesion.Id == reserva.Sesion.Id &&
@@ -24,15 +34,28 @@ public class ReservaService
         if (yaTieneReserva)
             throw new ArgumentException("Error: El cliente ya tiene una reserva confirmada para esta sesión.");
 
-        reserva.CreatedAt = DateTime.UtcNow;
-        reserva.CancelledAt = null;
-        reserva.Status = EstadoReserva.CONFIRMADA;
+        int reservasConfirmadas = await _context.Reservas.CountAsync(r => //comprobamos plazas
+            r.Sesion.Id == sesionId &&
+            r.Status == EstadoReserva.CONFIRMADA);
 
-        _context.Set<Reserva>().Add(reserva);
+        if (reservasConfirmadas >= sesion.MaxParticipants)
+            throw new ArgumentException("No hay plazas disponibles.");
+
+        var reserva = new Reserva
+        {
+            Cliente = cliente,
+            Sesion = sesion,
+            CreatedAt = DateTime.UtcNow,
+            CancelledAt = null,
+            Status = EstadoReserva.CONFIRMADA
+        };
+
+        _context.Reservas.Add(reserva);
         await _context.SaveChangesAsync();
 
         return reserva;
     }
+
 
     public async Task<List<Reserva>> ConsultarTodasAsync()
     {

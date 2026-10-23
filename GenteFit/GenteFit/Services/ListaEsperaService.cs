@@ -14,9 +14,19 @@ public class ListaEsperaService
         _context = context;
     }
 
-    public async Task<ListaEspera> CrearAsync(ListaEspera entrada)
+    public async Task<ListaEspera> CrearAsync(int clienteId, int sesionId)
     {
+        var cliente = await _context.Clientes.FindAsync(clienteId);
 
+        if (cliente is null)
+            throw new ArgumentException("El cliente  no existe.");
+
+        var sesion = await _context.Sesiones.FindAsync(sesionId);
+
+        if (sesion is null)
+            throw new ArgumentException("La sesión no existe.");
+
+   
         bool yaEstaEnLista = await _context.Set<ListaEspera>().AnyAsync(l =>
             l.Cliente.Id == entrada.Cliente.Id &&
             l.Sesion.Id == entrada.Sesion.Id &&
@@ -25,21 +35,26 @@ public class ListaEsperaService
         if (yaEstaEnLista)
             throw new ArgumentException("Error: El cliente ya está en la lista de espera para esta sesión.");
 
-        int ultimaPosicion = await _context.Set<ListaEspera>()
-            .Where(l => l.Sesion.Id == entrada.Sesion.Id &&
-                        l.Status == EstadoListaEspera.EN_ESPERA)
+        int ultimaPosicion = await _context.ListasEspera // calculamos la posición
+            .Where(l => l.Sesion.Id == sesionId && l.Status == EstadoListaEspera.EN_ESPERA)
             .Select(l => (int?)l.Position)
             .MaxAsync() ?? 0;
 
-        entrada.Position = ultimaPosicion + 1;
-        entrada.JoinedAt = DateTime.UtcNow;
-        entrada.Status = EstadoListaEspera.EN_ESPERA;
+        var entrada = new ListaEspera
+        {
+            Cliente = cliente,
+            Sesion = sesion,
+            Position = ultimaPosicion + 1,
+            JoinedAt = DateTime.UtcNow,
+            Status = EstadoListaEspera.EN_ESPERA
+        };
 
-        _context.Set<ListaEspera>().Add(entrada);
+        _context.ListasEspera.Add(entrada);
         await _context.SaveChangesAsync();
 
         return entrada;
     }
+
 
     public async Task<List<ListaEspera>> ConsultarTodasAsync()
     {
