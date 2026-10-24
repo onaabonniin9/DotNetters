@@ -26,11 +26,11 @@ public class ListaEsperaService
         if (sesion is null)
             throw new ArgumentException("La sesión no existe.");
 
-   
+
         bool yaEstaEnLista = await _context.Set<ListaEspera>().AnyAsync(l =>
-            l.Cliente.Id == entrada.Cliente.Id &&
-            l.Sesion.Id == entrada.Sesion.Id &&
-            l.Status == EstadoListaEspera.EN_ESPERA);
+    l.Cliente.Id == clienteId &&
+    l.Sesion.Id == sesionId &&
+    l.Status == EstadoListaEspera.EN_ESPERA);
 
         if (yaEstaEnLista)
             throw new ArgumentException("Error: El cliente ya está en la lista de espera para esta sesión.");
