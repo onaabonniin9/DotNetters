@@ -2,11 +2,6 @@
 using GenteFit.Data;
 using Microsoft.EntityFrameworkCore;
 
-
-// Ona, Víctor y Andreu, si vuestro SQL Server tiene otro nombre, configurad la variable
-// GENTEFIT_SQL_SERVER con vuestra instancia.
-// Si usáis localhost\SQLEXPRESS, no tenéis que tocar nada.
-
 string servidor = Environment.GetEnvironmentVariable("GENTEFIT_SQL_SERVER")
     ?? @"localhost\SQLEXPRESS";
 
