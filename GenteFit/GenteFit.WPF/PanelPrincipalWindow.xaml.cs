@@ -3,14 +3,24 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using GenteFit.WPF.Services;
+using GenteFit.Models;
 
 namespace GenteFit.WPF
 {
     public partial class PanelPrincipalWindow : Window
     {
-        public PanelPrincipalWindow()
+        public UsuarioAutenticado UsuarioActual { get; }
+
+        public PanelPrincipalWindow(UsuarioAutenticado usuario)
         {
+            ArgumentNullException.ThrowIfNull(usuario); // que los clientes no puedan accedwr
+
+            usuario.ExigirAdministrador();
+
+            UsuarioActual = usuario;
+
             InitializeComponent();
+
             Loaded += PanelPrincipalWindow_Loaded;
         }
 
@@ -76,8 +86,7 @@ namespace GenteFit.WPF
                 try
                 {
                     var servicio = new ConsultaUsuariosService();
-                    var usuarios = await servicio.ConsultarAsync();
-
+                    var usuarios = await servicio.ConsultarAsync(UsuarioActual);
                     UsuariosDataGrid.ItemsSource = usuarios;
                     AplicarFiltroUsuarios();
                 }
@@ -191,7 +200,9 @@ namespace GenteFit.WPF
             {
                 var servicio = new GestionEstadoUsuariosService();
                 bool encontrado = await servicio.CambiarEstadoAsync(
-                    usuario.Id, activar);
+                    usuario.Id,
+                    activar,
+                    UsuarioActual);
 
                 if (!encontrado)
                 {
@@ -202,7 +213,8 @@ namespace GenteFit.WPF
                 }
 
                 var consulta = new ConsultaUsuariosService();
-                var usuarios = await consulta.ConsultarAsync();
+                var usuarios = await consulta.ConsultarAsync(UsuarioActual);
+
                 UsuariosDataGrid.ItemsSource = usuarios;
                 AplicarFiltroUsuarios();
 
@@ -240,6 +252,15 @@ namespace GenteFit.WPF
                     "Operación no permitida", MessageBoxButton.OK,
                     MessageBoxImage.Warning);
             }
+            catch (UnauthorizedAccessException ex)
+            {
+                MessageBox.Show(
+                    this,
+                    ex.Message,
+                    "Acceso denegado",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
+            }
             catch (Exception)
             {
                 MessageBox.Show(this,
@@ -261,7 +282,9 @@ namespace GenteFit.WPF
             if (DetalleUsuarioPanel.DataContext is not UsuarioResumen usuario)
                 return;
 
-            var ventana = new EditarUsuarioWindow(usuario)
+            var ventana = new EditarUsuarioWindow(
+                usuario,
+                UsuarioActual)
             {
                 Owner = this
             };
@@ -272,7 +295,7 @@ namespace GenteFit.WPF
             try
             {
                 var servicio = new ConsultaUsuariosService();
-                var usuarios = await servicio.ConsultarAsync();
+                var usuarios = await servicio.ConsultarAsync(UsuarioActual);
 
                 UsuariosDataGrid.ItemsSource = usuarios;
                 AplicarFiltroUsuarios();

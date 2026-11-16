@@ -79,6 +79,7 @@ namespace GenteFit.WPF
                 : Visibility.Collapsed;
         }
 
+        
         private async void IniciarSesion_Click(
             object sender, RoutedEventArgs e)
         {
@@ -89,10 +90,11 @@ namespace GenteFit.WPF
                 : ContrasenaPasswordBox.Password;
 
             if (string.IsNullOrWhiteSpace(usuario) ||
-                string.IsNullOrWhiteSpace(contrasena))
+                string.IsNullOrEmpty(contrasena))
             {
                 MessageBox.Show(
                     "Introduce el usuario y la contraseña.");
+
                 return;
             }
 
@@ -103,25 +105,37 @@ namespace GenteFit.WPF
                 var servicio =
                     new GenteFit.WPF.Services.AutenticacionService();
 
-                bool autenticado =
-                    await servicio.AutenticarAdministradorAsync(
-                        usuario, contrasena);
+                var usuarioAutenticado =
+                    await servicio.AutenticarAsync(usuario, contrasena);
 
-                if (!autenticado)
+                if (usuarioAutenticado is null)
                 {
                     MessageBox.Show(
                         "Usuario o contraseña incorrectos, o cuenta desactivada.",
                         "GenteFit",
                         MessageBoxButton.OK,
                         MessageBoxImage.Warning);
+
                     return;
                 }
 
-                PanelPrincipalWindow panel = new PanelPrincipalWindow();
+                Window panel = usuarioAutenticado.Tipo switch
+                {
+                    GenteFit.Models.TipoCuentaUsuario.Administrador =>
+                        new PanelPrincipalWindow(usuarioAutenticado),
+
+                    GenteFit.Models.TipoCuentaUsuario.Cliente =>
+                        new PanelClienteWindow(usuarioAutenticado),
+
+                    _ => throw new UnauthorizedAccessException(
+                        "Este tipo de usuario no tiene acceso a la aplicación.")
+                };
+
                 panel.Show();
+
                 Close();
             }
-            catch (System.Exception)
+            catch (Exception)
             {
                 MessageBox.Show(
                     "No se ha podido comprobar el inicio de sesión. Revisa la conexión con la base de datos.",
@@ -134,6 +148,7 @@ namespace GenteFit.WPF
                 IniciarSesionButton.IsEnabled = true;
             }
         }
+
     }
 
 }

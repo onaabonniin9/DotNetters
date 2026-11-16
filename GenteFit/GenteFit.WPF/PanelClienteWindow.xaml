@@ -1,0 +1,17 @@
+
+<Window x:Class="GenteFit.WPF.PanelClienteWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="GenteFit - Cliente"
+        Width="1100"
+        Height="750"
+        MinWidth="800"
+        MinHeight="600"
+        WindowStartupLocation="CenterScreen"
+        Background="#FBF8F1">
+
+    <Grid>
+        <!-- Aquí implementaremos posteriormente el panel del cliente. -->
+    </Grid>
+
+</Window>

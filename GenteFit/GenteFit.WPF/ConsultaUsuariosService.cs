@@ -1,5 +1,7 @@
 ﻿
 using GenteFit.Data;
+using GenteFit.Models;
+using GenteFit.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace GenteFit.WPF.Services;
@@ -15,12 +17,16 @@ public record UsuarioResumen(
 
 public class ConsultaUsuariosService
 {
-    public async Task<List<UsuarioResumen>> ConsultarAsync()
+    public async Task<List<UsuarioResumen>> ConsultarAsync(
+        UsuarioAutenticado usuarioActual)
     {
         var factory = new GenteFitContextFactory();
 
         await using var contexto =
             factory.CreateDbContext(Array.Empty<string>());
+
+        await AutorizacionService.ExigirAdministradorActivoAsync(
+            contexto, usuarioActual);
 
         return await contexto.Usuarios
             .AsNoTracking()

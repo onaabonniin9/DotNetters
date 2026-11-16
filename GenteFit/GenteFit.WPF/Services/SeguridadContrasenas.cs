@@ -25,6 +25,9 @@ public static class SeguridadContrasenas
 
     public static bool Verificar(string contrasena, string almacenado)
     {
+        if (string.IsNullOrEmpty(almacenado))
+        return false;
+        
         string[] partes = almacenado.Split(':');
 
         if (partes.Length != 3 || partes[0] != "PBKDF2")

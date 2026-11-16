@@ -1,9 +1,9 @@
 ﻿
-using System;
 using System.Net.Mail;
-using System.Threading.Tasks;
 using GenteFit.Data;
+using GenteFit.Models;
 using Microsoft.EntityFrameworkCore;
+using GenteFit.Services;
 
 namespace GenteFit.WPF.Services;
 
@@ -13,8 +13,17 @@ public class EdicionUsuariosService
         int usuarioId,
         string nombre,
         string apellidos,
-        string correo)
+        string correo,
+        UsuarioAutenticado usuarioActual)
     {
+        var factory = new GenteFitContextFactory();
+
+        await using var contexto =
+            factory.CreateDbContext(Array.Empty<string>());
+
+        await AutorizacionService.ExigirAdministradorActivoAsync(
+            contexto, usuarioActual);
+
         nombre = nombre.Trim();
         apellidos = apellidos.Trim();
         correo = correo.Trim();
@@ -35,11 +44,6 @@ public class EdicionUsuariosService
             throw new ArgumentException(
                 "Introduce un correo electrónico válido.");
         }
-
-        var factory = new GenteFitContextFactory();
-
-        await using var contexto =
-            factory.CreateDbContext(Array.Empty<string>());
 
         var usuario = await contexto.Usuarios
             .FirstOrDefaultAsync(u => u.Id == usuarioId);
