@@ -12,6 +12,7 @@ public class SesionService
 
     public SesionService(GenteFitContext context)
     {
+        ArgumentNullException.ThrowIfNull(context);
         _context = context;
     }
 
@@ -29,10 +30,49 @@ public class SesionService
                 "El número máximo de participantes debe ser mayor que cero.");
     }
 
-    public async Task<Sesion> CrearAsync(Sesion sesion)
+    private static bool EsFutura(Sesion sesion)
     {
-        if (sesion is null)
-            throw new ArgumentNullException(nameof(sesion));
+        DateOnly hoy = DateOnly.FromDateTime(DateTime.Now);
+        TimeOnly ahora = TimeOnly.FromDateTime(DateTime.Now);
+
+        return sesion.Date > hoy ||
+               (sesion.Date == hoy && sesion.HourStart > ahora);
+    }
+
+    private async Task ExigirPermisoConsultaAsync(
+        UsuarioAutenticado usuarioActual)
+    {
+        ArgumentNullException.ThrowIfNull(usuarioActual);
+
+        switch (usuarioActual.Tipo)
+        {
+            case TipoCuentaUsuario.Administrador:
+                await AutorizacionService.ExigirAdministradorActivoAsync(
+                    _context,
+                    usuarioActual);
+                break;
+
+            case TipoCuentaUsuario.Cliente:
+                await AutorizacionService.ExigirClienteActivoAsync(
+                    _context,
+                    usuarioActual);
+                break;
+
+            default:
+                throw new UnauthorizedAccessException(
+                    "No tienes permisos para consultar sesiones.");
+        }
+    }
+
+    public async Task<Sesion> CrearAsync(
+        Sesion sesion,
+        UsuarioAutenticado usuarioActual)
+    {
+        await AutorizacionService.ExigirAdministradorActivoAsync(
+            _context,
+            usuarioActual);
+
+        ArgumentNullException.ThrowIfNull(sesion);
 
         ValidarDatos(
             sesion.HourStart,
@@ -42,6 +82,10 @@ public class SesionService
         if (sesion.Status != EstadoSesion.PROGRAMADA)
             throw new InvalidOperationException(
                 "Una nueva sesión debe estar programada.");
+
+        if (!EsFutura(sesion))
+            throw new InvalidOperationException(
+                "No se puede programar una sesión en una fecha u hora pasada.");
 
         if (sesion.Monitor is null ||
             sesion.Sala is null ||
@@ -55,6 +99,10 @@ public class SesionService
         if (monitor is null)
             throw new ArgumentException(
                 "El monitor indicado no existe.");
+
+        if (!monitor.Active)
+        throw new InvalidOperationException(
+            "No se puede programar una sesión con un monitor inactivo.");
 
         var sala = await _context.Salas
             .FindAsync(sesion.Sala.Id);
@@ -93,25 +141,59 @@ public class SesionService
         return sesion;
     }
 
-    public async Task<List<Sesion>> ConsultarTodasAsync()
+    public async Task<List<Sesion>> ConsultarTodasAsync(
+        UsuarioAutenticado usuarioActual)
     {
-        return await _context.Sesiones
+        await ExigirPermisoConsultaAsync(usuarioActual);
+
+        var consulta = _context.Sesiones
             .AsNoTracking()
             .Include(s => s.Monitor)
             .Include(s => s.Sala)
             .Include(s => s.Actividad)
+            .AsQueryable();
+
+        if (usuarioActual.Tipo == TipoCuentaUsuario.Cliente)
+        {
+            DateOnly hoy = DateOnly.FromDateTime(DateTime.Now);
+            TimeOnly ahora = TimeOnly.FromDateTime(DateTime.Now);
+
+            consulta = consulta.Where(s =>
+                s.Status == EstadoSesion.PROGRAMADA &&
+                (s.Date > hoy ||
+                 (s.Date == hoy && s.HourStart > ahora)));
+        }
+
+        return await consulta
             .OrderBy(s => s.Date)
             .ThenBy(s => s.HourStart)
             .ToListAsync();
     }
 
-    public async Task<Sesion?> ConsultarPorIdAsync(int id)
+    public async Task<Sesion?> ConsultarPorIdAsync(
+        int id,
+        UsuarioAutenticado usuarioActual)
     {
-        return await _context.Sesiones
+        await ExigirPermisoConsultaAsync(usuarioActual);
+
+        var consulta = _context.Sesiones
             .Include(s => s.Monitor)
             .Include(s => s.Sala)
             .Include(s => s.Actividad)
-            .FirstOrDefaultAsync(s => s.Id == id);
+            .Where(s => s.Id == id);
+
+        if (usuarioActual.Tipo == TipoCuentaUsuario.Cliente)
+        {
+            DateOnly hoy = DateOnly.FromDateTime(DateTime.Now);
+            TimeOnly ahora = TimeOnly.FromDateTime(DateTime.Now);
+
+            consulta = consulta.Where(s =>
+                s.Status == EstadoSesion.PROGRAMADA &&
+                (s.Date > hoy ||
+                 (s.Date == hoy && s.HourStart > ahora)));
+        }
+
+        return await consulta.FirstOrDefaultAsync();
     }
 
     public async Task<bool> ActualizarAsync(
@@ -119,11 +201,26 @@ public class SesionService
         DateOnly fecha,
         TimeOnly horaInicio,
         TimeOnly horaFin,
-        int maxParticipants)
+        int maxParticipants,
+        UsuarioAutenticado usuarioActual)
     {
+        await AutorizacionService.ExigirAdministradorActivoAsync(
+            _context,
+            usuarioActual);
+
         ValidarDatos(horaInicio, horaFin, maxParticipants);
 
-        var sesion = await ConsultarPorIdAsync(id);
+        DateOnly hoy = DateOnly.FromDateTime(DateTime.Now);
+        TimeOnly ahora = TimeOnly.FromDateTime(DateTime.Now);
+
+        if (fecha < hoy ||
+            (fecha == hoy && horaInicio <= ahora))
+            throw new InvalidOperationException(
+                "La sesión debe tener una fecha y hora futuras.");
+
+        var sesion = await _context.Sesiones
+            .Include(s => s.Sala)
+            .FirstOrDefaultAsync(s => s.Id == id);
 
         if (sesion is null)
             return false;
@@ -154,8 +251,14 @@ public class SesionService
         return true;
     }
 
-    public async Task<bool> EliminarAsync(int id)
+    public async Task<bool> EliminarAsync(
+        int id,
+        UsuarioAutenticado usuarioActual)
     {
+        await AutorizacionService.ExigirAdministradorActivoAsync(
+            _context,
+            usuarioActual);
+
         var sesion = await _context.Sesiones
             .FirstOrDefaultAsync(s => s.Id == id);
 
@@ -179,8 +282,14 @@ public class SesionService
         return true;
     }
 
-    public async Task<bool> CancelarAsync(int id)
+    public async Task<bool> CancelarAsync(
+        int id,
+        UsuarioAutenticado usuarioActual)
     {
+        await AutorizacionService.ExigirAdministradorActivoAsync(
+            _context,
+            usuarioActual);
+
         await using var transaction =
             await _context.Database.BeginTransactionAsync(
                 IsolationLevel.Serializable);

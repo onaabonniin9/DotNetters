@@ -2,7 +2,7 @@
 using System;
 using System.Security.Cryptography;
 
-namespace GenteFit.WPF.Services;
+namespace GenteFit.Services;
 
 public static class SeguridadContrasenas
 {

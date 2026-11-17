@@ -103,7 +103,7 @@ namespace GenteFit.WPF
             try
             {
                 var servicio =
-                    new GenteFit.WPF.Services.AutenticacionService();
+                    new GenteFit.Services.AutenticacionService();
 
                 var usuarioAutenticado =
                     await servicio.AutenticarAsync(usuario, contrasena);
