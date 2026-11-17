@@ -20,7 +20,10 @@ public sealed record ListaEsperaResumen(
     int Posicion,
     DateTime JoinedAt,
     EstadoListaEspera Estado
-);
+)
+{
+    public string ActividadNombre { get; init; } = "Actividad";
+}
 
 public class ListaEsperaService
 {
@@ -50,7 +53,13 @@ public class ListaEsperaService
                 l.Position,
                 l.JoinedAt,
                 l.Status
-            ));
+            )
+            {
+                ActividadNombre =
+                    l.Sesion.Actividad != null
+                        ? l.Sesion.Actividad.Name
+                        : "Actividad"
+            });
     }
 
     public async Task<ListaEsperaResumen> CrearAsync(

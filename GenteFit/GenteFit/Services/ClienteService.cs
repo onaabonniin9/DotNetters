@@ -48,6 +48,40 @@ public class ClienteService
             .FirstOrDefaultAsync(c => c.Id == id);
     }
 
+    public async Task<Cliente?> ConsultarMiPerfilAsync(
+        UsuarioAutenticado usuarioActual)
+    {
+        int clienteId = await AutorizacionService.ExigirClienteActivoAsync(
+            _context, usuarioActual);
+
+        return await _context.Clientes
+            .AsNoTracking()
+            .FirstOrDefaultAsync(c => c.Id == clienteId);
+    }
+
+    public async Task<bool> ActualizarMiPerfilAsync(
+        UsuarioAutenticado usuarioActual,
+        string name,
+        string surname,
+        string username,
+        string email,
+        string phone,
+        string dni,
+        DateTime birthDate,
+        string address,
+        string city,
+        string postalCode,
+        string iban)
+    {
+        int clienteId = await AutorizacionService.ExigirClienteActivoAsync(
+            _context, usuarioActual);
+
+        return await ActualizarInternoAsync(
+            clienteId, name, surname, username, email, phone, dni,
+            birthDate, address, city, postalCode, iban,
+            usuarioActual);
+    }
+
     public async Task<bool> ActualizarAsync(
         int id,
         string name,
@@ -62,34 +96,82 @@ public class ClienteService
         string postalCode,
         string iban)
     {
+        return await ActualizarInternoAsync(
+            id, name, surname, username, email, phone, dni,
+            birthDate, address, city, postalCode, iban, null);
+    }
+
+    private async Task<bool> ActualizarInternoAsync(
+        int id,
+        string name,
+        string surname,
+        string username,
+        string email,
+        string phone,
+        string dni,
+        DateTime birthDate,
+        string address,
+        string city,
+        string postalCode,
+        string iban,
+        UsuarioAutenticado? usuarioActual)
+    {
+        if (id <= 0)
+            throw new ArgumentOutOfRangeException(nameof(id));
+
         if (string.IsNullOrWhiteSpace(name))
-            throw new ArgumentException("Error: falta añadir un nombre");
+            throw new ArgumentException("El nombre es obligatorio.", nameof(name));
 
         if (string.IsNullOrWhiteSpace(surname))
-            throw new ArgumentException("Error: faltan los apellidos");
+            throw new ArgumentException("Los apellidos son obligatorios.", nameof(surname));
 
         if (string.IsNullOrWhiteSpace(dni))
-            throw new ArgumentException("Error: falta añadir el DNI");
+            throw new ArgumentException("El DNI es obligatorio.", nameof(dni));
 
-        var cliente = await ConsultarPorIdAsync(id);
+        if (string.IsNullOrWhiteSpace(username))
+            throw new ArgumentException("El nombre de usuario es obligatorio.", nameof(username));
+
+        string usuarioNormalizado = username.Trim();
+
+        bool usernameEnUso = await _context.Usuarios
+            .AsNoTracking()
+            .AnyAsync(u => u.Id != id && u.Username == usuarioNormalizado);
+
+        if (usernameEnUso)
+            throw new ArgumentException(
+                "Ese nombre de usuario ya está siendo utilizado. Elige otro.",
+                nameof(username));
+
+        var cliente = await _context.Clientes
+            .FirstOrDefaultAsync(c => c.Id == id);
 
         if (cliente is null)
             return false;
 
-        cliente.Name = name;
-        cliente.Surname = surname;
-        cliente.Username = username;
-        cliente.Email = email;
-        cliente.Phone = phone;
-        cliente.DNI = dni;
+        if (usuarioActual is not null)
+        {
+            int clienteAutorizado =
+                await AutorizacionService.ExigirClienteActivoAsync(
+                    _context, usuarioActual);
+
+            if (clienteAutorizado != id)
+                throw new UnauthorizedAccessException(
+                    "No puedes modificar los datos de otro cliente.");
+        }
+
+        cliente.Name = name.Trim();
+        cliente.Surname = surname.Trim();
+        cliente.Username = usuarioNormalizado;
+        cliente.Email = email?.Trim() ?? string.Empty;
+        cliente.Phone = phone?.Trim() ?? string.Empty;
+        cliente.DNI = dni.Trim();
         cliente.BirthDate = birthDate;
-        cliente.Address = address;
-        cliente.City = city;
-        cliente.PostalCode = postalCode;
-        cliente.IBAN = iban;
+        cliente.Address = address?.Trim() ?? string.Empty;
+        cliente.City = city?.Trim() ?? string.Empty;
+        cliente.PostalCode = postalCode?.Trim() ?? string.Empty;
+        cliente.IBAN = iban?.Trim() ?? string.Empty;
 
         await _context.SaveChangesAsync();
-
         return true;
     }
 

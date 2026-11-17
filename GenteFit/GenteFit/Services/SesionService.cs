@@ -6,6 +6,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GenteFit.Services;
 
+public sealed record DisponibilidadSesion(
+    int SesionId,
+    int CapacidadMaxima,
+    int ReservasConfirmadas,
+    int PlazasLibres,
+    int PersonasEnEspera);
+
 public class SesionService
 {
     private readonly GenteFitContext _context;
@@ -177,6 +184,7 @@ public class SesionService
         await ExigirPermisoConsultaAsync(usuarioActual);
 
         var consulta = _context.Sesiones
+            .AsNoTracking()
             .Include(s => s.Monitor)
             .Include(s => s.Sala)
             .Include(s => s.Actividad)
@@ -194,6 +202,96 @@ public class SesionService
         }
 
         return await consulta.FirstOrDefaultAsync();
+    }
+    public async Task<IReadOnlyDictionary<int, DisponibilidadSesion>> ConsultarDisponibilidadAsync(
+        IEnumerable<int> sesionIds,
+        UsuarioAutenticado usuarioActual)
+    {
+        ArgumentNullException.ThrowIfNull(sesionIds);
+        await ExigirPermisoConsultaAsync(usuarioActual);
+
+        int[] idsSolicitados = sesionIds
+            .Where(id => id > 0)
+            .Distinct()
+            .ToArray();
+
+        if (idsSolicitados.Length == 0)
+            return new Dictionary<int, DisponibilidadSesion>();
+
+        var consultaSesiones = _context.Sesiones
+            .AsNoTracking()
+            .Where(s => idsSolicitados.Contains(s.Id));
+
+        if (usuarioActual.Tipo == TipoCuentaUsuario.Cliente)
+        {
+            DateOnly hoy = DateOnly.FromDateTime(DateTime.Now);
+            TimeOnly ahora = TimeOnly.FromDateTime(DateTime.Now);
+
+            consultaSesiones = consultaSesiones.Where(s =>
+                s.Status == EstadoSesion.PROGRAMADA &&
+                (s.Date > hoy || (s.Date == hoy && s.HourStart > ahora)));
+        }
+
+        var capacidades = await consultaSesiones
+            .Select(s => new
+            {
+                SesionId = s.Id,
+                Capacidad = s.MaxParticipants
+            })
+            .ToListAsync();
+
+        int[] idsAutorizados = capacidades
+            .Select(s => s.SesionId)
+            .ToArray();
+
+        if (idsAutorizados.Length == 0)
+            return new Dictionary<int, DisponibilidadSesion>();
+
+        var reservasPorSesion = await _context.Reservas
+            .AsNoTracking()
+            .Where(r =>
+                idsAutorizados.Contains(r.Sesion.Id) &&
+                r.Status == EstadoReserva.CONFIRMADA)
+            .GroupBy(r => r.Sesion.Id)
+            .Select(g => new
+            {
+                SesionId = g.Key,
+                Total = g.Count()
+            })
+            .ToDictionaryAsync(x => x.SesionId, x => x.Total);
+
+        var esperaPorSesion = await _context.ListasEspera
+            .AsNoTracking()
+            .Where(l =>
+                idsAutorizados.Contains(l.Sesion.Id) &&
+                l.Status == EstadoListaEspera.EN_ESPERA)
+            .GroupBy(l => l.Sesion.Id)
+            .Select(g => new
+            {
+                SesionId = g.Key,
+                Total = g.Count()
+            })
+            .ToDictionaryAsync(x => x.SesionId, x => x.Total);
+
+        var resultado = new Dictionary<int, DisponibilidadSesion>();
+
+        foreach (var sesion in capacidades)
+        {
+            reservasPorSesion.TryGetValue(sesion.SesionId, out int confirmadas);
+            esperaPorSesion.TryGetValue(sesion.SesionId, out int personasEnEspera);
+
+            int capacidad = Math.Max(0, sesion.Capacidad);
+            int plazasLibres = Math.Max(0, capacidad - confirmadas);
+
+            resultado[sesion.SesionId] = new DisponibilidadSesion(
+                sesion.SesionId,
+                capacidad,
+                confirmadas,
+                plazasLibres,
+                personasEnEspera);
+        }
+
+        return resultado;
     }
 
     public async Task<bool> ActualizarAsync(
@@ -237,10 +335,22 @@ public class SesionService
             r.Sesion.Id == id &&
             r.Status == EstadoReserva.CONFIRMADA);
 
-        if (maxParticipants < reservasConfirmadas)
-            throw new InvalidOperationException(
-                "No se puede reducir la capacidad por debajo del número de reservas confirmadas.");
+        if (maxParticipants > sesion.MaxParticipants)
+        {
+            bool hayListaEsperaPendiente = await _context.ListasEspera
+                .AnyAsync(l =>
+                    l.Sesion.Id == id &&
+                    l.Status == EstadoListaEspera.EN_ESPERA);
 
+            if (hayListaEsperaPendiente)
+            {
+                throw new InvalidOperationException(
+                    "No se puede ampliar la capacidad de una sesión " +
+                    "mientras haya clientes en lista de espera. " +
+                    "Debe gestionarse primero la lista de espera.");
+            }
+        }
+        
         sesion.Date = fecha;
         sesion.HourStart = horaInicio;
         sesion.HourEnd = horaFin;

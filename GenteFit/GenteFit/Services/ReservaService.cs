@@ -20,7 +20,18 @@ public sealed record ReservaResumen(
     DateTime CreatedAt,
     DateTime? CancelledAt,
     EstadoReserva Estado
-);
+)
+{
+    public string ActividadNombre { get; init; } = "Actividad";
+}
+
+public sealed class SesionSinPlazasException : InvalidOperationException
+{
+    public SesionSinPlazasException()
+        : base("No hay plazas disponibles. Debes apuntarte a la lista de espera.")
+    {
+    }
+}
 
 public class ReservaService
 {
@@ -50,7 +61,13 @@ public class ReservaService
                 r.CreatedAt,
                 r.CancelledAt,
                 r.Status
-            ));
+            )
+            {
+                ActividadNombre =
+                    r.Sesion.Actividad != null
+                        ? r.Sesion.Actividad.Name
+                        : "Actividad"
+            });
     }
 
     public async Task<ReservaResumen> CrearAsync(
@@ -119,8 +136,7 @@ public class ReservaService
             r.Status == EstadoReserva.CONFIRMADA);
 
         if (reservasConfirmadas >= sesion.MaxParticipants)
-            throw new InvalidOperationException(
-                "No hay plazas disponibles. Debes apuntarte a la lista de espera.");
+            throw new SesionSinPlazasException();
 
         bool hayListaPendiente = await _context.ListasEspera.AnyAsync(l =>
             l.Sesion.Id == sesionId &&
@@ -302,7 +318,7 @@ public class ReservaService
 
         if (inicioSesion <= ahora)
             return;
-            
+
 
         int reservasConfirmadas = await _context.Reservas.CountAsync(r =>
             r.Sesion.Id == sesionId &&
