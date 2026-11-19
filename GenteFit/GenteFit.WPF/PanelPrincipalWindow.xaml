@@ -525,6 +525,35 @@
                                    Style="{StaticResource Flecha}"/>
                     </Grid>
                 </Button>
+                
+                <!-- CLIENTES XML -->
+                <Button Style="{StaticResource Tarjeta}"
+        Click="MenuClientesXml_Click">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="105"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="55"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Text="&lt;/&gt;"
+                   FontFamily="Consolas"
+                   FontSize="32"
+                   FontWeight="Bold"
+                   Foreground="#17483D"
+                   VerticalAlignment="Center"/>
+
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <TextBlock Text="Clientes XML"
+                       Style="{StaticResource TituloTarjeta}"/>
+                            <TextBlock Text="Importar y exportar clientes en formato XML."
+                       Style="{StaticResource DescripcionTarjeta}"/>
+                        </StackPanel>
+
+                        <TextBlock Grid.Column="2"
+                   Style="{StaticResource Flecha}"/>
+                    </Grid>
+                </Button>
 
             </StackPanel>
         </ScrollViewer>

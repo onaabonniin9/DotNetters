@@ -27,8 +27,8 @@ public class ReservaService
             throw new ArgumentException("La sesión no existe.");
 
         bool yaTieneReserva = await _context.Set<Reserva>().AnyAsync(r => // Asegurarnos de que solo exista una reserva
-            r.Cliente.Id == reserva.Cliente.Id &&
-            r.Sesion.Id == reserva.Sesion.Id &&
+           r.Cliente.Id == clienteId &&
+            r.Sesion.Id == sesionId &&
             r.Status == EstadoReserva.CONFIRMADA);
 
         if (yaTieneReserva)

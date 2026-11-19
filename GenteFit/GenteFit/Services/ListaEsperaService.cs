@@ -28,8 +28,8 @@ public class ListaEsperaService
 
    
         bool yaEstaEnLista = await _context.Set<ListaEspera>().AnyAsync(l =>
-            l.Cliente.Id == entrada.Cliente.Id &&
-            l.Sesion.Id == entrada.Sesion.Id &&
+            l.Cliente.Id == clienteId &&
+            l.Sesion.Id == sesionId &&
             l.Status == EstadoListaEspera.EN_ESPERA);
 
         if (yaEstaEnLista)
