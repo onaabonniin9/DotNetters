@@ -1,0 +1,109 @@
+<Window x:Class="GenteFit.WPF.EditarMonitorAdminWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="GenteFit - Monitor" Width="650" Height="790"
+        MinWidth="570" MinHeight="610" ResizeMode="CanResize"
+        WindowStartupLocation="CenterOwner" Background="#FBF8F1" FontFamily="Poppins">
+    <Window.Resources>
+        <Style x:Key="Accion" TargetType="Button">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Height" Value="44"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Fondo" Background="{TemplateBinding Background}" CornerRadius="10">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Fondo" Property="Opacity" Value="0.85"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="Fondo" Property="Opacity" Value="0.55"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style TargetType="TextBox">
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="Foreground" Value="#17483D"/>
+            <Setter Property="Padding" Value="12,9"/>
+            <Setter Property="BorderBrush" Value="#C9DAD3"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Height" Value="43"/>
+            <Setter Property="Margin" Value="0,0,0,14"/>
+        </Style>
+        <Style TargetType="PasswordBox">
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="Foreground" Value="#17483D"/>
+            <Setter Property="Padding" Value="12,9"/>
+            <Setter Property="BorderBrush" Value="#C9DAD3"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Height" Value="43"/>
+            <Setter Property="Margin" Value="0,0,0,14"/>
+        </Style>
+        <Style x:Key="Etiqueta" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="#3C7667"/>
+            <Setter Property="Margin" Value="0,0,0,5"/>
+        </Style>
+    </Window.Resources>
+    <Border Background="White" CornerRadius="18" Margin="24" Padding="30">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <StackPanel Grid.Row="0" Margin="0,0,0,18">
+                <TextBlock x:Name="TituloTextBlock" Text="Nuevo monitor" FontSize="26"
+                           FontWeight="Bold" Foreground="#17483D"/>
+                <TextBlock Text="Completa los datos del monitor" FontSize="13"
+                           Foreground="#71877F" Margin="0,5,0,0"/>
+            </StackPanel>
+            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto"
+                          HorizontalScrollBarVisibility="Disabled">
+                <StackPanel Margin="0,0,22,0">
+                    <TextBlock Text="Nombre" Style="{StaticResource Etiqueta}"/>
+                    <TextBox x:Name="NombreTextBox" MaxLength="150"/>
+                    <TextBlock Text="Apellidos" Style="{StaticResource Etiqueta}"/>
+                    <TextBox x:Name="ApellidosTextBox" MaxLength="150"/>
+                    <TextBlock Text="Nombre de usuario" Style="{StaticResource Etiqueta}"/>
+                    <TextBox x:Name="UsuarioTextBox" MaxLength="100"/>
+                    <TextBlock Text="DNI" Style="{StaticResource Etiqueta}"/>
+                    <TextBox x:Name="DniTextBox" MaxLength="20"/>
+                    <TextBlock Text="Especialidad" Style="{StaticResource Etiqueta}"/>
+                    <TextBox x:Name="EspecialidadTextBox" MaxLength="150"/>
+                    <TextBlock Text="Correo electrónico" Style="{StaticResource Etiqueta}"/>
+                    <TextBox x:Name="CorreoTextBox" MaxLength="200"/>
+                    <TextBlock Text="Teléfono" Style="{StaticResource Etiqueta}"/>
+                    <TextBox x:Name="TelefonoTextBox" MaxLength="30"/>
+                    <StackPanel x:Name="ContrasenaPanel">
+                        <TextBlock Text="Contraseña inicial" Style="{StaticResource Etiqueta}"/>
+                        <PasswordBox x:Name="ContrasenaPasswordBox" MaxLength="128"/>
+                        <TextBlock Text="Se guardará mediante el sistema de hash de GenteFit."
+                                   FontSize="12" Foreground="#71877F" Margin="0,-6,0,12"/>
+                    </StackPanel>
+                </StackPanel>
+            </ScrollViewer>
+            <Grid Grid.Row="2" Margin="0,22,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="12"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Button Grid.Column="0" Content="Cancelar" Background="#81968D"
+                        Style="{StaticResource Accion}" Click="Cancelar_Click"/>
+                <Button x:Name="GuardarButton" Grid.Column="2" Content="Guardar monitor"
+                        Background="#17483D" Style="{StaticResource Accion}" Click="Guardar_Click"/>
+            </Grid>
+        </Grid>
+    </Border>
+</Window>

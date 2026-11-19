@@ -64,12 +64,25 @@ namespace GenteFit.WPF
                 MessageBoxImage.Warning);
         }
 
+
         private async void AbrirSeccion_Click(
             object sender, RoutedEventArgs e)
         {
             if (sender is not Button boton ||
                 boton.Tag is not string seccion)
             {
+                return;
+            }
+
+            // Abrir la gestión de actividades y sesiones
+            if (seccion == "Actividades y sesiones")
+            {
+                var ventana = new ActividadesSesionesAdminWindow(UsuarioActual)
+                {
+                    Owner = this
+                };
+
+                ventana.ShowDialog();
                 return;
             }
 
@@ -103,9 +116,24 @@ namespace GenteFit.WPF
                 return;
             }
 
+            if (seccion == "Monitores")
+            {
+                new MonitoresAdminWindow(UsuarioActual) { Owner = this }.ShowDialog();
+                InicioPanel.Visibility = Visibility.Visible;
+                return;
+            }
+
+            if (seccion == "Reservas y listas de espera")
+            {
+                new ReservasListasAdminWindow(UsuarioActual) { Owner = this }.ShowDialog();
+                InicioPanel.Visibility = Visibility.Visible;
+                return;
+            }
+
             TituloSeccion.Text = seccion;
             SeccionPanel.Visibility = Visibility.Visible;
         }
+
 
         private void BuscarUsuarioTextBox_TextChanged(
             object sender, TextChangedEventArgs e)

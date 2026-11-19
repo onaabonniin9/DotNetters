@@ -1,0 +1,121 @@
+<Window x:Class="GenteFit.WPF.EditarSesionAdminWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="GenteFit - Sesión"
+        Width="610" Height="760" MinWidth="550" MinHeight="650"
+        WindowStartupLocation="CenterOwner" Background="#FBF8F1"
+        FontFamily="Poppins">
+    <Window.Resources>
+        <Style x:Key="BotonAccion" TargetType="Button">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Height" Value="44"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Fondo" Background="{TemplateBinding Background}" CornerRadius="10">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Fondo" Property="Opacity" Value="0.85"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style TargetType="TextBox">
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="Foreground" Value="#17483D"/>
+            <Setter Property="Padding" Value="12,8"/>
+            <Setter Property="BorderBrush" Value="#C9DAD3"/>
+            <Setter Property="Background" Value="White"/>
+        </Style>
+        <Style TargetType="ComboBox">
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="Foreground" Value="#17483D"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#C9DAD3"/>
+            <Setter Property="Height" Value="42"/>
+        </Style>
+        <Style x:Key="Etiqueta" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="#3C7667"/>
+            <Setter Property="Margin" Value="0,0,0,5"/>
+        </Style>
+    </Window.Resources>
+
+    <Border Background="White" CornerRadius="18" Margin="24" Padding="27">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <StackPanel Grid.Row="0" Margin="0,0,0,18">
+                <TextBlock x:Name="TituloTextBlock" Text="Nueva sesión" FontSize="26"
+                           FontWeight="Bold" Foreground="#17483D"/>
+                <TextBlock Text="Configura los datos de la sesión"
+                           Foreground="#71877F" FontSize="13" Margin="0,5,0,0"/>
+            </StackPanel>
+
+            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                <StackPanel Margin="0,0,8,0">
+                    <TextBlock Text="Actividad" Style="{StaticResource Etiqueta}"/>
+                    <ComboBox x:Name="ActividadComboBox" DisplayMemberPath="Texto"
+                              SelectedValuePath="Id" Margin="0,0,0,14"/>
+
+                    <TextBlock Text="Monitor" Style="{StaticResource Etiqueta}"/>
+                    <ComboBox x:Name="MonitorComboBox" DisplayMemberPath="Texto"
+                              SelectedValuePath="Id" Margin="0,0,0,14"/>
+
+                    <TextBlock Text="Sala" Style="{StaticResource Etiqueta}"/>
+                    <ComboBox x:Name="SalaComboBox" DisplayMemberPath="Texto"
+                              SelectedValuePath="Id" Margin="0,0,0,14"/>
+
+                    <TextBlock Text="Fecha" Style="{StaticResource Etiqueta}"/>
+                    <DatePicker x:Name="FechaDatePicker" Height="42" FontSize="15"
+                                SelectedDateFormat="Short" Margin="0,0,0,14"/>
+
+                    <Grid Margin="0,0,0,14">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="14"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="Hora de inicio (HH:mm)" Style="{StaticResource Etiqueta}"/>
+                            <TextBox x:Name="InicioTextBox" Height="42" MaxLength="5"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="2">
+                            <TextBlock Text="Hora de fin (HH:mm)" Style="{StaticResource Etiqueta}"/>
+                            <TextBox x:Name="FinTextBox" Height="42" MaxLength="5"/>
+                        </StackPanel>
+                    </Grid>
+
+                    <TextBlock Text="Plazas máximas" Style="{StaticResource Etiqueta}"/>
+                    <TextBox x:Name="PlazasTextBox" Height="42" MaxLength="5"/>
+                    <TextBlock Text="Las plazas no pueden superar la capacidad de la sala."
+                               Foreground="#71877F" FontSize="12" Margin="0,6,0,0"/>
+                </StackPanel>
+            </ScrollViewer>
+
+            <Grid Grid.Row="2" Margin="0,18,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="12"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Button Grid.Column="0" Content="Cancelar" Background="#81968D"
+                        Style="{StaticResource BotonAccion}" Click="Cancelar_Click"/>
+                <Button x:Name="GuardarButton" Grid.Column="2" Content="Guardar sesión"
+                        Background="#17483D" Style="{StaticResource BotonAccion}"
+                        Click="Guardar_Click"/>
+            </Grid>
+        </Grid>
+    </Border>
+</Window>
