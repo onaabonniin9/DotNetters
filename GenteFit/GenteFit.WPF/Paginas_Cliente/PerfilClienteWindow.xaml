@@ -254,29 +254,170 @@
                     </StackPanel>
                 </Border>
 
-                <!-- PAGOS Y FACTURAS: FALTA IMPLEMENTAR -->
+                <!-- PAGOS Y FACTURAS: AHORA SÍ IMPLEMENTADO -->
                 <Border Background="White"
                         BorderBrush="#C8D1D9"
                         BorderThickness="1"
                         CornerRadius="8"
                         Padding="24"
-                        Margin="0,0,0,20"
-                        MinHeight="85">
-                    <TextBlock Text="Pagos y facturas"
-                               FontSize="18"
-                               FontWeight="Bold"
-                               Foreground="#17483D"/>
-                </Border>
+                        Margin="0,0,0,20">
 
-                <Button Content="Cerrar sesión"
-                        Width="180"
-                        Height="44"
-                        HorizontalAlignment="Center"
-                        Background="#17483D"
-                        Foreground="White"
-                        Style="{StaticResource BotonPerfil}"
-                        Margin="0,0,0,20"
-                        Click="CerrarSesion_Click"/>
+                    <StackPanel>
+
+                        <TextBlock Text="Pagos"
+                                FontSize="18"
+                                FontWeight="Bold"
+                                Foreground="#17483D"
+                                Margin="0,0,0,18"/>
+
+                        <Grid Margin="0,0,0,8">
+
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="1.1*"/>
+                                <ColumnDefinition Width="1.8*"/>
+                                <ColumnDefinition Width="1.1*"/>
+                                <ColumnDefinition Width="1.25*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Grid.Column="0"
+                                    Text="Importe"
+                                    Style="{StaticResource EtiquetaPerfil}"
+                                    Margin="5,0"/>
+
+                            <TextBlock Grid.Column="1"
+                                    Text="Concepto"
+                                    Style="{StaticResource EtiquetaPerfil}"
+                                    Margin="5,0"/>
+
+                            <TextBlock Grid.Column="2"
+                                    Text="Estado"
+                                    Style="{StaticResource EtiquetaPerfil}"
+                                    Margin="5,0"/>
+
+                            <TextBlock Grid.Column="3"
+                                    Text="Fecha pagado"
+                                    Style="{StaticResource EtiquetaPerfil}"
+                                    Margin="5,0"/>
+
+                            <TextBlock Grid.Column="4"
+                                    Text="Factura"
+                                    Style="{StaticResource EtiquetaPerfil}"
+                                    Margin="5,0"/>
+
+                        </Grid>
+
+                        <ItemsControl x:Name="ItemsPagos"
+                                    Visibility="Collapsed">
+
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+
+                                    <Border BorderBrush="#EDF3F0"
+                                            BorderThickness="0,1,0,0"
+                                            Padding="0,11">
+
+                                        <Grid>
+
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="1.1*"/>
+                                                <ColumnDefinition Width="1.8*"/>
+                                                <ColumnDefinition Width="1.1*"/>
+                                                <ColumnDefinition Width="1.25*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <TextBlock Grid.Column="0"
+                                                    Text="{Binding ImporteTexto}"
+                                                    FontFamily="Poppins"
+                                                    FontSize="13"
+                                                    FontWeight="SemiBold"
+                                                    Foreground="#252A27"
+                                                    VerticalAlignment="Center"
+                                                    Margin="5,0"/>
+
+                                            <TextBlock Grid.Column="1"
+                                                    Text="{Binding Concepto}"
+                                                    FontFamily="Poppins"
+                                                    FontSize="13"
+                                                    Foreground="#252A27"
+                                                    VerticalAlignment="Center"
+                                                    TextTrimming="CharacterEllipsis"
+                                                    ToolTip="{Binding Concepto}"
+                                                    Margin="5,0"/>
+
+                                            <Border Grid.Column="2"
+                                                    Background="#EDF3F0"
+                                                    CornerRadius="12"
+                                                    Padding="7,4"
+                                                    HorizontalAlignment="Left"
+                                                    VerticalAlignment="Center"
+                                                    Margin="5,0">
+
+                                                <TextBlock Text="{Binding Estado}"
+                                                        FontFamily="Poppins"
+                                                        FontSize="11"
+                                                        FontWeight="Bold"
+                                                        Foreground="{Binding EstadoColor}"/>
+
+                                            </Border>
+
+                                            <TextBlock Grid.Column="3"
+                                                    Text="{Binding FechaPagadoTexto}"
+                                                    FontFamily="Poppins"
+                                                    FontSize="13"
+                                                    Foreground="#252A27"
+                                                    VerticalAlignment="Center"
+                                                    Margin="5,0"/>
+
+                                            <!-- Pendiente de implementar al integrar Odoo, porque supongo que la factura se obtendrá de ahí? -->
+                                            <Button Grid.Column="4"
+                                                    Content="Ver Factura"
+                                                    Width="105"
+                                                    Height="34"
+                                                    IsEnabled="False"
+                                                    Background="#8FA9A1"
+                                                    Foreground="White"
+                                                    FontFamily="Poppins"
+                                                    FontSize="11"
+                                                    FontWeight="SemiBold"
+                                                    BorderThickness="0"
+                                                    Padding="6,4"
+                                                    Margin="5,0"
+                                                    Cursor="Arrow"/>
+
+                                        </Grid>
+
+                                    </Border>
+
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+
+                        </ItemsControl>
+
+                        <TextBlock x:Name="TxtSinPagos"
+                                Text="No hay ningún pago registrado todavía"
+                                FontFamily="Poppins"
+                                FontSize="13"
+                                Foreground="#65756E"
+                                HorizontalAlignment="Center"
+                                TextAlignment="Center"
+                                Margin="0,12,0,4"
+                                Visibility="Collapsed"/>
+
+                        <TextBlock x:Name="TxtErrorPagos"
+                                FontFamily="Poppins"
+                                FontSize="13"
+                                Foreground="#B42318"
+                                HorizontalAlignment="Center"
+                                TextAlignment="Center"
+                                TextWrapping="Wrap"
+                                Margin="0,12,0,4"
+                                Visibility="Collapsed"/>
+
+                    </StackPanel>
+
+                </Border>
             </StackPanel>
         </ScrollViewer>
     </Grid>
