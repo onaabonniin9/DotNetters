@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using GenteFit.Data;
 using GenteFit.Models;
 using GenteFit.Services;
@@ -16,10 +17,15 @@ public sealed record SesionResumen(
     int Id, string Actividad, string Fecha, string Inicio, string Fin,
     string Sala, string Monitor, int Plazas, string Estado);
 
-public partial class ActividadesSesionesAdminWindow : Window
+public partial class ActividadesSesionesAdminWindow : UserControl
 {
+    public event EventHandler? SolicitarInicio;
+
+
     private readonly UsuarioAutenticado _usuarioActual;
     private bool _cargando;
+    private List<ActividadResumen> _actividades = new();
+    private List<SesionResumen> _sesiones = new();
 
     public ActividadesSesionesAdminWindow(UsuarioAutenticado usuario)
     {
@@ -56,11 +62,11 @@ public partial class ActividadesSesionesAdminWindow : Window
                 .ThenBy(s => s.HourStart)
                 .ToListAsync();
 
-            ActividadesDataGrid.ItemsSource = actividades.Select(a => new ActividadResumen(
+            _actividades = actividades.Select(a => new ActividadResumen(
                 a.Id, a.Name, a.Description, a.Level.ToString(), a.Duration,
                 a.Active ? "Activa" : "Inactiva")).ToList();
 
-            SesionesDataGrid.ItemsSource = sesiones.Select(s => new SesionResumen(
+            _sesiones = sesiones.Select(s => new SesionResumen(
                 s.Id,
                 s.Actividad?.Name ?? "Sin actividad",
                 s.Date.ToString("dd/MM/yyyy"),
@@ -72,12 +78,12 @@ public partial class ActividadesSesionesAdminWindow : Window
                 s.Status.ToString()
             )).ToList();
 
-            EstadoTextBlock.Text = $"{actividades.Count} actividades · {sesiones.Count} sesiones";
+            AplicarFiltro();
         }
         catch (Exception)
         {
             EstadoTextBlock.Text = "No se han podido cargar los datos.";
-            MessageBox.Show(this,
+            MessageBox.Show(Window.GetWindow(this)!,
                 "No se han podido consultar las actividades y sesiones. Comprueba SQL Server.",
                 "GenteFit", MessageBoxButton.OK, MessageBoxImage.Error);
         }
@@ -87,9 +93,34 @@ public partial class ActividadesSesionesAdminWindow : Window
         }
     }
 
+    private void BuscarTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        => AplicarFiltro();
+
+    private void AplicarFiltro()
+    {
+        if (BuscarTextBox is null || ActividadesDataGrid is null || SesionesDataGrid is null)
+            return;
+
+        string texto = BuscarTextBox.Text.Trim();
+        bool Coincide(params string[] campos) =>
+            texto.Length == 0 || campos.Any(c =>
+                c.Contains(texto, StringComparison.OrdinalIgnoreCase));
+
+        var actividades = _actividades.Where(a => Coincide(
+            a.Id.ToString(), a.Nombre, a.Descripcion, a.Intensidad,
+            a.Duracion.ToString(), a.Estado)).ToList();
+        var sesiones = _sesiones.Where(s => Coincide(
+            s.Id.ToString(), s.Actividad, s.Fecha, s.Inicio, s.Fin,
+            s.Sala, s.Monitor, s.Plazas.ToString(), s.Estado)).ToList();
+
+        ActividadesDataGrid.ItemsSource = actividades;
+        SesionesDataGrid.ItemsSource = sesiones;
+        EstadoTextBlock.Text = $"{actividades.Count} actividades · {sesiones.Count} sesiones";
+    }
+
     private async void NuevaActividad_Click(object sender, RoutedEventArgs e)
     {
-        var ventana = new EditarActividadAdminWindow { Owner = this };
+        var ventana = new EditarActividadAdminWindow { Owner = Window.GetWindow(this) };
         if (ventana.ShowDialog() == true)
             await CargarDatosAsync();
     }
@@ -98,7 +129,7 @@ public partial class ActividadesSesionesAdminWindow : Window
     {
         if (ActividadesDataGrid.SelectedItem is not ActividadResumen seleccionada)
         {
-            MessageBox.Show(this, "Selecciona primero una actividad.",
+            MessageBox.Show(Window.GetWindow(this)!, "Selecciona primero una actividad.",
                 "GenteFit", MessageBoxButton.OK, MessageBoxImage.Information);
             return;
         }
@@ -111,19 +142,19 @@ public partial class ActividadesSesionesAdminWindow : Window
             var actividad = await servicio.ConsultarPorIdAsync(seleccionada.Id);
             if (actividad is null)
             {
-                MessageBox.Show(this, "La actividad ya no existe.",
+                MessageBox.Show(Window.GetWindow(this)!, "La actividad ya no existe.",
                     "GenteFit", MessageBoxButton.OK, MessageBoxImage.Warning);
                 await CargarDatosAsync();
                 return;
             }
 
-            var ventana = new EditarActividadAdminWindow(actividad) { Owner = this };
+            var ventana = new EditarActividadAdminWindow(actividad) { Owner = Window.GetWindow(this) };
             if (ventana.ShowDialog() == true)
                 await CargarDatosAsync();
         }
         catch (Exception)
         {
-            MessageBox.Show(this, "No se ha podido abrir la actividad.",
+            MessageBox.Show(Window.GetWindow(this)!, "No se ha podido abrir la actividad.",
                 "GenteFit", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
@@ -132,14 +163,14 @@ public partial class ActividadesSesionesAdminWindow : Window
     {
         if (ActividadesDataGrid.SelectedItem is not ActividadResumen seleccionada)
         {
-            MessageBox.Show(this, "Selecciona primero una actividad.",
+            MessageBox.Show(Window.GetWindow(this)!, "Selecciona primero una actividad.",
                 "GenteFit", MessageBoxButton.OK, MessageBoxImage.Information);
             return;
         }
 
         bool activar = seleccionada.Estado == "Inactiva";
         string accion = activar ? "activar" : "desactivar";
-        if (MessageBox.Show(this,
+        if (MessageBox.Show(Window.GetWindow(this)!,
                 $"¿Quieres {accion} la actividad «{seleccionada.Nombre}»?",
                 "Confirmar cambio de estado", MessageBoxButton.YesNo,
                 MessageBoxImage.Question) != MessageBoxResult.Yes)
@@ -152,7 +183,7 @@ public partial class ActividadesSesionesAdminWindow : Window
             var actividad = await contexto.Actividades.FindAsync(seleccionada.Id);
             if (actividad is null)
             {
-                MessageBox.Show(this, "La actividad ya no existe.",
+                MessageBox.Show(Window.GetWindow(this)!, "La actividad ya no existe.",
                     "GenteFit", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
             else
@@ -164,21 +195,21 @@ public partial class ActividadesSesionesAdminWindow : Window
         }
         catch (Exception)
         {
-            MessageBox.Show(this, "No se ha podido cambiar el estado de la actividad.",
+            MessageBox.Show(Window.GetWindow(this)!, "No se ha podido cambiar el estado de la actividad.",
                 "GenteFit", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 
     private async void NuevaSesion_Click(object sender, RoutedEventArgs e)
     {
-        var ventana = new EditarSesionAdminWindow(_usuarioActual) { Owner = this };
+        var ventana = new EditarSesionAdminWindow(_usuarioActual) { Owner = Window.GetWindow(this) };
         if (ventana.ShowDialog() == true)
             await CargarDatosAsync();
     }
 
     private async void GestionarSalas_Click(object sender, RoutedEventArgs e)
     {
-        var ventana = new SalasAdminWindow(_usuarioActual) { Owner = this };
+        var ventana = new SalasAdminWindow(_usuarioActual) { Owner = Window.GetWindow(this) };
         ventana.ShowDialog();
         await CargarDatosAsync();
     }
@@ -187,7 +218,7 @@ public partial class ActividadesSesionesAdminWindow : Window
     {
         if (SesionesDataGrid.SelectedItem is not SesionResumen seleccionada)
         {
-            MessageBox.Show(this, "Selecciona primero una sesión.",
+            MessageBox.Show(Window.GetWindow(this)!, "Selecciona primero una sesión.",
                 "GenteFit", MessageBoxButton.OK, MessageBoxImage.Information);
             return;
         }
@@ -200,19 +231,19 @@ public partial class ActividadesSesionesAdminWindow : Window
             var sesion = await servicio.ConsultarPorIdAsync(seleccionada.Id, _usuarioActual);
             if (sesion is null)
             {
-                MessageBox.Show(this, "La sesión ya no existe.",
+                MessageBox.Show(Window.GetWindow(this)!, "La sesión ya no existe.",
                     "GenteFit", MessageBoxButton.OK, MessageBoxImage.Warning);
                 await CargarDatosAsync();
                 return;
             }
 
-            var ventana = new EditarSesionAdminWindow(_usuarioActual, sesion) { Owner = this };
+            var ventana = new EditarSesionAdminWindow(_usuarioActual, sesion) { Owner = Window.GetWindow(this) };
             if (ventana.ShowDialog() == true)
                 await CargarDatosAsync();
         }
         catch (Exception)
         {
-            MessageBox.Show(this, "No se ha podido abrir la sesión.",
+            MessageBox.Show(Window.GetWindow(this)!, "No se ha podido abrir la sesión.",
                 "GenteFit", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
@@ -221,19 +252,19 @@ public partial class ActividadesSesionesAdminWindow : Window
     {
         if (SesionesDataGrid.SelectedItem is not SesionResumen seleccionada)
         {
-            MessageBox.Show(this, "Selecciona primero una sesión.",
+            MessageBox.Show(Window.GetWindow(this)!, "Selecciona primero una sesión.",
                 "GenteFit", MessageBoxButton.OK, MessageBoxImage.Information);
             return;
         }
 
         if (seleccionada.Estado != EstadoSesion.PROGRAMADA.ToString())
         {
-            MessageBox.Show(this, "Solo se pueden cancelar sesiones programadas.",
+            MessageBox.Show(Window.GetWindow(this)!, "Solo se pueden cancelar sesiones programadas.",
                 "GenteFit", MessageBoxButton.OK, MessageBoxImage.Information);
             return;
         }
 
-        if (MessageBox.Show(this,
+        if (MessageBox.Show(Window.GetWindow(this)!,
                 $"¿Quieres cancelar la sesión {seleccionada.Id} de «{seleccionada.Actividad}»?",
                 "Confirmar cancelación", MessageBoxButton.YesNo,
                 MessageBoxImage.Question) != MessageBoxResult.Yes)
@@ -246,13 +277,13 @@ public partial class ActividadesSesionesAdminWindow : Window
             var servicio = new SesionService(contexto);
             bool cancelada = await servicio.CancelarAsync(seleccionada.Id, _usuarioActual);
             if (!cancelada)
-                MessageBox.Show(this, "La sesión ya no existe.",
+                MessageBox.Show(Window.GetWindow(this)!, "La sesión ya no existe.",
                     "GenteFit", MessageBoxButton.OK, MessageBoxImage.Warning);
             await CargarDatosAsync();
         }
         catch (Exception)
         {
-            MessageBox.Show(this, "No se ha podido cancelar la sesión.",
+            MessageBox.Show(Window.GetWindow(this)!, "No se ha podido cancelar la sesión.",
                 "GenteFit", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
@@ -264,6 +295,6 @@ public partial class ActividadesSesionesAdminWindow : Window
 
     private void Cerrar_Click(object sender, RoutedEventArgs e)
     {
-        Close();
+        SolicitarInicio?.Invoke(this, EventArgs.Empty);
     }
 }

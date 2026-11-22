@@ -1,19 +1,4 @@
-﻿<Window x:Class="GenteFit.WPF.PanelPrincipalWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="GenteFit - Administración"
-        Width="1100"
-        Height="750"
-        MinWidth="800"
-        MinHeight="600"
-        WindowStartupLocation="CenterScreen"
-        WindowStyle="SingleBorderWindow"
-        ResizeMode="CanResize"
-        WindowState="Normal"
-        SizeToContent="Manual"
-        ShowInTaskbar="True"
-        Background="#FBF8F1"
-        FontFamily="Poppins">
+<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:componentes="clr-namespace:GenteFit.WPF.Components" x:Class="GenteFit.WPF.PanelPrincipalWindow" Title="GenteFit - Administración" Width="1100" Height="750" MinWidth="800" MinHeight="600" WindowStartupLocation="CenterScreen" WindowStyle="SingleBorderWindow" ResizeMode="CanResize" WindowState="Normal" SizeToContent="Manual" ShowInTaskbar="True" Background="#FBF8F1" FontFamily="Poppins">
 
 
     <Window.Resources>
@@ -34,22 +19,13 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border x:Name="Borde"
-                                Background="{TemplateBinding Background}"
-                                BorderBrush="{TemplateBinding BorderBrush}"
-                                BorderThickness="{TemplateBinding BorderThickness}"
-                                CornerRadius="11">
-                            <ContentPresenter
-                                HorizontalAlignment="Stretch"
-                                VerticalAlignment="Center"
-                                Margin="30,10"/>
+                        <Border x:Name="Borde" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="11">
+                            <ContentPresenter HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="30,10"/>
                         </Border>
 
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="Borde"
-                                        Property="Background"
-                                        Value="#EDF3F0"/>
+                                <Setter TargetName="Borde" Property="Background" Value="#EDF3F0"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -68,12 +44,8 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border x:Name="BordeBoton"
-                                Background="{TemplateBinding Background}"
-                                CornerRadius="11">
-                            <ContentPresenter HorizontalAlignment="Center"
-                                              VerticalAlignment="Center"
-                                              Margin="18,0"/>
+                        <Border x:Name="BordeBoton" Background="{TemplateBinding Background}" CornerRadius="11">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Margin="18,0"/>
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
@@ -120,7 +92,7 @@
         </Grid.RowDefinitions>
 
         <!-- CABECERA -->
-        <Grid Grid.Row="0">
+        <Grid Grid.Row="0" Visibility="Collapsed">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>
@@ -128,149 +100,78 @@
             </Grid.ColumnDefinitions>
 
             <!-- Logotipo pequeño -->
-            <StackPanel Grid.Column="0"
-                        Orientation="Horizontal"
-                        VerticalAlignment="Top">
+            <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Top">
 
                 <Viewbox Width="48" Height="48">
                     <Canvas Width="100" Height="100">
-                        <Ellipse Width="90" Height="90"
-                                 Canvas.Left="5" Canvas.Top="5"
-                                 Stroke="#17483D"
-                                 StrokeThickness="7"/>
+                        <Ellipse Width="90" Height="90" Canvas.Left="5" Canvas.Top="5" Stroke="#17483D" StrokeThickness="7"/>
 
-                        <Rectangle Width="62" Height="7"
-                                   Canvas.Left="19" Canvas.Top="46"
-                                   Fill="#17483D"/>
+                        <Rectangle Width="62" Height="7" Canvas.Left="19" Canvas.Top="46" Fill="#17483D"/>
 
-                        <Rectangle Width="10" Height="27"
-                                   Canvas.Left="18" Canvas.Top="36"
-                                   RadiusX="5" RadiusY="5"
-                                   Fill="#17483D"/>
+                        <Rectangle Width="10" Height="27" Canvas.Left="18" Canvas.Top="36" RadiusX="5" RadiusY="5" Fill="#17483D"/>
 
-                        <Rectangle Width="10" Height="27"
-                                   Canvas.Left="72" Canvas.Top="36"
-                                   RadiusX="5" RadiusY="5"
-                                   Fill="#17483D"/>
+                        <Rectangle Width="10" Height="27" Canvas.Left="72" Canvas.Top="36" RadiusX="5" RadiusY="5" Fill="#17483D"/>
 
-                        <Rectangle Width="9" Height="22"
-                                   Canvas.Left="28" Canvas.Top="39"
-                                   RadiusX="4" RadiusY="4"
-                                   Fill="#8FA9A1"/>
+                        <Rectangle Width="9" Height="22" Canvas.Left="28" Canvas.Top="39" RadiusX="4" RadiusY="4" Fill="#8FA9A1"/>
 
-                        <Rectangle Width="9" Height="22"
-                                   Canvas.Left="63" Canvas.Top="39"
-                                   RadiusX="4" RadiusY="4"
-                                   Fill="#8FA9A1"/>
+                        <Rectangle Width="9" Height="22" Canvas.Left="63" Canvas.Top="39" RadiusX="4" RadiusY="4" Fill="#8FA9A1"/>
                     </Canvas>
                 </Viewbox>
 
-                <TextBlock FontFamily="DM Sans"
-                           FontSize="22"
-                           FontWeight="Bold"
-                           VerticalAlignment="Center"
-                           Margin="8,0,0,0">
+                <TextBlock FontFamily="DM Sans" FontSize="22" FontWeight="Bold" VerticalAlignment="Center" Margin="8,0,0,0">
                     <Run Text="Gente" Foreground="#17483D"/>
                     <Run Text="Fit" Foreground="#8FA9A1"/>
                 </TextBlock>
             </StackPanel>
 
             <!-- Identificación provisional del rol -->
-            <Border Grid.Column="1"
-                    Height="42"
-                    Background="#C8D1D9"
-                    BorderBrush="#8FA9A1"
-                    BorderThickness="2"
-                    CornerRadius="22"
-                    Padding="15,0"
-                    VerticalAlignment="Top">
+            <Border Grid.Column="1" Height="42" Background="#C8D1D9" BorderBrush="#8FA9A1" BorderThickness="2" CornerRadius="22" Padding="15,0" VerticalAlignment="Top">
 
-                <StackPanel Orientation="Horizontal"
-                            VerticalAlignment="Center">
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
 
                     <Canvas Width="24" Height="27">
-                        <Ellipse Width="12" Height="12"
-                                 Canvas.Left="6" Canvas.Top="1"
-                                 Fill="#17483D"/>
-                        <Path Data="M 1,26 L 1,23 C 1,14 23,14 23,23 L 23,26 Z"
-                              Fill="#17483D"/>
+                        <Ellipse Width="12" Height="12" Canvas.Left="6" Canvas.Top="1" Fill="#17483D"/>
+                        <Path Data="M 1,26 L 1,23 C 1,14 23,14 23,23 L 23,26 Z" Fill="#17483D"/>
                     </Canvas>
 
-                    <TextBlock Text="Administrador"
-                               FontSize="16"
-                               FontWeight="Bold"
-                               Foreground="#17483D"
-                               VerticalAlignment="Center"
-                               Margin="10,0,0,0"/>
+                    <TextBlock Text="Administrador" FontSize="16" FontWeight="Bold" Foreground="#17483D" VerticalAlignment="Center" Margin="10,0,0,0"/>
                 </StackPanel>
             </Border>
 
             <!-- Menú hamburguesa -->
-            <Button x:Name="MenuButton"
-                    Grid.Column="2"
-                    HorizontalAlignment="Right"
-                    VerticalAlignment="Top"
-                    Background="Transparent"
-                    BorderThickness="0"
-                    Cursor="Hand"
-                    Click="MenuButton_Click">
+            <Button x:Name="MenuButton" Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Top" Background="Transparent" BorderThickness="0" Cursor="Hand" Click="MenuButton_Click">
 
                 <Button.ContextMenu>
                     <ContextMenu>
-                        <MenuItem Header="Inicio"
-                                  Click="MenuInicio_Click"/>
+                        <MenuItem Header="Inicio" Click="MenuInicio_Click"/>
                         <Separator/>
-                        <MenuItem Header="Cerrar sesión"
-                                  Click="MenuCerrarSesion_Click"/>
+                        <MenuItem Header="Cerrar sesión" Click="MenuCerrarSesion_Click"/>
                     </ContextMenu>
                 </Button.ContextMenu>
 
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="Menú"
-                               FontSize="21"
-                               FontWeight="SemiBold"
-                               Foreground="#17483D"
-                               VerticalAlignment="Center"
-                               Margin="0,0,15,0"/>
+                    <TextBlock Text="Menú" FontSize="21" FontWeight="SemiBold" Foreground="#17483D" VerticalAlignment="Center" Margin="0,0,15,0"/>
 
                     <Canvas Width="34" Height="30">
-                        <Line X1="1" Y1="6" X2="33" Y2="6"
-                              Stroke="#17483D" StrokeThickness="2"/>
-                        <Line X1="1" Y1="15" X2="33" Y2="15"
-                              Stroke="#17483D" StrokeThickness="2"/>
-                        <Line X1="1" Y1="24" X2="33" Y2="24"
-                              Stroke="#17483D" StrokeThickness="2"/>
+                        <Line X1="1" Y1="6" X2="33" Y2="6" Stroke="#17483D" StrokeThickness="2"/>
+                        <Line X1="1" Y1="15" X2="33" Y2="15" Stroke="#17483D" StrokeThickness="2"/>
+                        <Line X1="1" Y1="24" X2="33" Y2="24" Stroke="#17483D" StrokeThickness="2"/>
                     </Canvas>
                 </StackPanel>
             </Button>
         </Grid>
 
         <!-- PANTALLA DE INICIO -->
-        <ScrollViewer x:Name="InicioPanel"
-                      Grid.Row="1"
-                      VerticalScrollBarVisibility="Auto"
-                      HorizontalScrollBarVisibility="Disabled">
+        <ScrollViewer x:Name="InicioPanel" Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
 
-            <StackPanel MaxWidth="1050"
-                        HorizontalAlignment="Center"
-                        Margin="0,45,0,15">
+            <StackPanel MaxWidth="1050" HorizontalAlignment="Center" Margin="0,45,0,15">
 
-                <TextBlock Text="Inicio"
-                           FontSize="36"
-                           FontWeight="Bold"
-                           Foreground="Black"
-                           HorizontalAlignment="Center"/>
+                <TextBlock Text="Inicio" FontSize="36" FontWeight="Bold" Foreground="Black" HorizontalAlignment="Center"/>
 
-                <TextBlock Text="¿Qué quieres gestionar hoy?"
-                           FontSize="25"
-                           Foreground="Black"
-                           HorizontalAlignment="Center"
-                           Margin="0,8,0,55"/>
+                <TextBlock Text="¿Qué quieres gestionar hoy?" FontSize="25" Foreground="Black" HorizontalAlignment="Center" Margin="0,8,0,55"/>
 
                 <!-- USUARIOS -->
-                <Button Style="{StaticResource Tarjeta}"
-                        Tag="Gestión de usuarios"
-                        Click="AbrirSeccion_Click">
+                <Button Style="{StaticResource Tarjeta}" Tag="Gestión de usuarios" Click="AbrirSeccion_Click">
 
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -279,45 +180,28 @@
                             <ColumnDefinition Width="55"/>
                         </Grid.ColumnDefinitions>
 
-                        <Viewbox Width="66" Height="60"
-                                 HorizontalAlignment="Left"
-                                 VerticalAlignment="Center">
+                        <Viewbox Width="66" Height="60" HorizontalAlignment="Left" VerticalAlignment="Center">
                             <Canvas Width="75" Height="65">
-                                <Ellipse Width="19" Height="19"
-                                         Canvas.Left="28" Canvas.Top="4"
-                                         Fill="#17483D"/>
-                                <Path Data="M 19,55 C 19,27 56,27 56,55 Z"
-                                      Fill="#17483D"/>
-                                <Ellipse Width="15" Height="15"
-                                         Canvas.Left="5" Canvas.Top="15"
-                                         Fill="#17483D"/>
-                                <Path Data="M 0,56 C 0,34 24,31 28,42 L 28,56 Z"
-                                      Fill="#17483D"/>
-                                <Ellipse Width="15" Height="15"
-                                         Canvas.Left="55" Canvas.Top="15"
-                                         Fill="#17483D"/>
-                                <Path Data="M 47,42 C 51,31 75,34 75,56 L 47,56 Z"
-                                      Fill="#17483D"/>
+                                <Ellipse Width="19" Height="19" Canvas.Left="28" Canvas.Top="4" Fill="#17483D"/>
+                                <Path Data="M 19,55 C 19,27 56,27 56,55 Z" Fill="#17483D"/>
+                                <Ellipse Width="15" Height="15" Canvas.Left="5" Canvas.Top="15" Fill="#17483D"/>
+                                <Path Data="M 0,56 C 0,34 24,31 28,42 L 28,56 Z" Fill="#17483D"/>
+                                <Ellipse Width="15" Height="15" Canvas.Left="55" Canvas.Top="15" Fill="#17483D"/>
+                                <Path Data="M 47,42 C 51,31 75,34 75,56 L 47,56 Z" Fill="#17483D"/>
                             </Canvas>
                         </Viewbox>
 
-                        <StackPanel Grid.Column="1"
-                                    VerticalAlignment="Center">
-                            <TextBlock Text="Gestión de usuarios"
-                                       Style="{StaticResource TituloTarjeta}"/>
-                            <TextBlock Text="Consulta y administración de los usuarios registrados en GenteFit."
-                                       Style="{StaticResource DescripcionTarjeta}"/>
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <TextBlock Text="Gestión de usuarios" Style="{StaticResource TituloTarjeta}"/>
+                            <TextBlock Text="Consulta y administración de los usuarios registrados en GenteFit." Style="{StaticResource DescripcionTarjeta}"/>
                         </StackPanel>
 
-                        <TextBlock Grid.Column="2"
-                                   Style="{StaticResource Flecha}"/>
+                        <TextBlock Grid.Column="2" Style="{StaticResource Flecha}"/>
                     </Grid>
                 </Button>
 
                 <!-- ACTIVIDADES Y SESIONES -->
-                <Button Style="{StaticResource Tarjeta}"
-                        Tag="Actividades y sesiones"
-                        Click="AbrirSeccion_Click">
+                <Button Style="{StaticResource Tarjeta}" Tag="Actividades y sesiones" Click="AbrirSeccion_Click">
 
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -326,27 +210,16 @@
                             <ColumnDefinition Width="55"/>
                         </Grid.ColumnDefinitions>
 
-                        <Viewbox Width="65" Height="65"
-                                 HorizontalAlignment="Left">
+                        <Viewbox Width="65" Height="65" HorizontalAlignment="Left">
                             <Canvas Width="70" Height="70">
-                                <Rectangle Width="59" Height="57"
-                                           Canvas.Left="5" Canvas.Top="9"
-                                           RadiusX="5" RadiusY="5"
-                                           Stroke="#17483D"
-                                           StrokeThickness="3"
-                                           Fill="Transparent"/>
+                                <Rectangle Width="59" Height="57" Canvas.Left="5" Canvas.Top="9" RadiusX="5" RadiusY="5" Stroke="#17483D" StrokeThickness="3" Fill="Transparent"/>
 
-                                <Line X1="5" Y1="24" X2="64" Y2="24"
-                                      Stroke="#17483D" StrokeThickness="3"/>
+                                <Line X1="5" Y1="24" X2="64" Y2="24" Stroke="#17483D" StrokeThickness="3"/>
 
-                                <Line X1="18" Y1="2" X2="18" Y2="17"
-                                      Stroke="#17483D" StrokeThickness="3"/>
-                                <Line X1="51" Y1="2" X2="51" Y2="17"
-                                      Stroke="#17483D" StrokeThickness="3"/>
+                                <Line X1="18" Y1="2" X2="18" Y2="17" Stroke="#17483D" StrokeThickness="3"/>
+                                <Line X1="51" Y1="2" X2="51" Y2="17" Stroke="#17483D" StrokeThickness="3"/>
 
-                                <UniformGrid Rows="3" Columns="3"
-                                             Width="42" Height="32"
-                                             Canvas.Left="14" Canvas.Top="30">
+                                <UniformGrid Rows="3" Columns="3" Width="42" Height="32" Canvas.Left="14" Canvas.Top="30">
                                     <Rectangle Margin="3" Stroke="#17483D" StrokeThickness="2"/>
                                     <Rectangle Margin="3" Stroke="#17483D" StrokeThickness="2"/>
                                     <Rectangle Margin="3" Stroke="#17483D" StrokeThickness="2"/>
@@ -360,23 +233,17 @@
                             </Canvas>
                         </Viewbox>
 
-                        <StackPanel Grid.Column="1"
-                                    VerticalAlignment="Center">
-                            <TextBlock Text="Actividades y sesiones"
-                                       Style="{StaticResource TituloTarjeta}"/>
-                            <TextBlock Text="Organización de actividades, horarios y sesiones del centro."
-                                       Style="{StaticResource DescripcionTarjeta}"/>
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <TextBlock Text="Actividades y sesiones" Style="{StaticResource TituloTarjeta}"/>
+                            <TextBlock Text="Organización de actividades, horarios y sesiones del centro." Style="{StaticResource DescripcionTarjeta}"/>
                         </StackPanel>
 
-                        <TextBlock Grid.Column="2"
-                                   Style="{StaticResource Flecha}"/>
+                        <TextBlock Grid.Column="2" Style="{StaticResource Flecha}"/>
                     </Grid>
                 </Button>
 
                 <!-- MONITORES -->
-                <Button Style="{StaticResource Tarjeta}"
-                        Tag="Monitores"
-                        Click="AbrirSeccion_Click">
+                <Button Style="{StaticResource Tarjeta}" Tag="Monitores" Click="AbrirSeccion_Click">
 
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -385,34 +252,24 @@
                             <ColumnDefinition Width="55"/>
                         </Grid.ColumnDefinitions>
 
-                        <Viewbox Width="62" Height="65"
-                                 HorizontalAlignment="Left">
+                        <Viewbox Width="62" Height="65" HorizontalAlignment="Left">
                             <Canvas Width="65" Height="70">
-                                <Ellipse Width="28" Height="28"
-                                         Canvas.Left="18" Canvas.Top="1"
-                                         Fill="#17483D"/>
-                                <Path Data="M 8,68 L 8,52 C 8,22 57,22 57,52 L 57,68 Z"
-                                      Fill="#17483D"/>
+                                <Ellipse Width="28" Height="28" Canvas.Left="18" Canvas.Top="1" Fill="#17483D"/>
+                                <Path Data="M 8,68 L 8,52 C 8,22 57,22 57,52 L 57,68 Z" Fill="#17483D"/>
                             </Canvas>
                         </Viewbox>
 
-                        <StackPanel Grid.Column="1"
-                                    VerticalAlignment="Center">
-                            <TextBlock Text="Monitores"
-                                       Style="{StaticResource TituloTarjeta}"/>
-                            <TextBlock Text="Consulta y gestión de los monitores del centro."
-                                       Style="{StaticResource DescripcionTarjeta}"/>
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <TextBlock Text="Monitores" Style="{StaticResource TituloTarjeta}"/>
+                            <TextBlock Text="Consulta y gestión de los monitores del centro." Style="{StaticResource DescripcionTarjeta}"/>
                         </StackPanel>
 
-                        <TextBlock Grid.Column="2"
-                                   Style="{StaticResource Flecha}"/>
+                        <TextBlock Grid.Column="2" Style="{StaticResource Flecha}"/>
                     </Grid>
                 </Button>
 
                 <!-- RESERVAS -->
-                <Button Style="{StaticResource Tarjeta}"
-                        Tag="Reservas y listas de espera"
-                        Click="AbrirSeccion_Click">
+                <Button Style="{StaticResource Tarjeta}" Tag="Reservas y listas de espera" Click="AbrirSeccion_Click">
 
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -421,59 +278,32 @@
                             <ColumnDefinition Width="55"/>
                         </Grid.ColumnDefinitions>
 
-                        <Viewbox Width="70" Height="68"
-                                 HorizontalAlignment="Left">
+                        <Viewbox Width="70" Height="68" HorizontalAlignment="Left">
                             <Canvas Width="80" Height="75">
-                                <Rectangle Width="58" Height="58"
-                                           Canvas.Left="3" Canvas.Top="10"
-                                           Stroke="#17483D"
-                                           StrokeThickness="2.5"
-                                           Fill="Transparent"/>
-                                <Line X1="3" Y1="25" X2="61" Y2="25"
-                                      Stroke="#17483D" StrokeThickness="2"/>
-                                <Line X1="15" Y1="2" X2="15" Y2="17"
-                                      Stroke="#17483D" StrokeThickness="3"/>
-                                <Line X1="48" Y1="2" X2="48" Y2="17"
-                                      Stroke="#17483D" StrokeThickness="3"/>
+                                <Rectangle Width="58" Height="58" Canvas.Left="3" Canvas.Top="10" Stroke="#17483D" StrokeThickness="2.5" Fill="Transparent"/>
+                                <Line X1="3" Y1="25" X2="61" Y2="25" Stroke="#17483D" StrokeThickness="2"/>
+                                <Line X1="15" Y1="2" X2="15" Y2="17" Stroke="#17483D" StrokeThickness="3"/>
+                                <Line X1="48" Y1="2" X2="48" Y2="17" Stroke="#17483D" StrokeThickness="3"/>
 
-                                <Path Data="M 15,35 L 21,41 M 21,35 L 15,41
-                                            M 31,35 L 37,41 M 37,35 L 31,41
-                                            M 15,48 L 21,54 M 21,48 L 15,54
-                                            M 31,48 L 37,54 M 37,48 L 31,54"
-                                      Stroke="#17483D"
-                                      StrokeThickness="2"/>
+                                <Path Data="M 15,35 L 21,41 M 21,35 L 15,41                                             M 31,35 L 37,41 M 37,35 L 31,41                                             M 15,48 L 21,54 M 21,48 L 15,54                                             M 31,48 L 37,54 M 37,48 L 31,54" Stroke="#17483D" StrokeThickness="2"/>
 
-                                <Ellipse Width="28" Height="28"
-                                         Canvas.Left="49" Canvas.Top="44"
-                                         Fill="#FBF8F1"
-                                         Stroke="#17483D"
-                                         StrokeThickness="2.5"/>
+                                <Ellipse Width="28" Height="28" Canvas.Left="49" Canvas.Top="44" Fill="#FBF8F1" Stroke="#17483D" StrokeThickness="2.5"/>
 
-                                <Path Data="M 55,58 L 60,63 L 70,52"
-                                      Stroke="#17483D"
-                                      StrokeThickness="2.5"
-                                      StrokeLineJoin="Round"
-                                      Fill="Transparent"/>
+                                <Path Data="M 55,58 L 60,63 L 70,52" Stroke="#17483D" StrokeThickness="2.5" StrokeLineJoin="Round" Fill="Transparent"/>
                             </Canvas>
                         </Viewbox>
 
-                        <StackPanel Grid.Column="1"
-                                    VerticalAlignment="Center">
-                            <TextBlock Text="Reservas y listas de espera"
-                                       Style="{StaticResource TituloTarjeta}"/>
-                            <TextBlock Text="Seguimiento de reservas, disponibilidad y listas de espera."
-                                       Style="{StaticResource DescripcionTarjeta}"/>
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <TextBlock Text="Reservas y listas de espera" Style="{StaticResource TituloTarjeta}"/>
+                            <TextBlock Text="Seguimiento de reservas, disponibilidad y listas de espera." Style="{StaticResource DescripcionTarjeta}"/>
                         </StackPanel>
 
-                        <TextBlock Grid.Column="2"
-                                   Style="{StaticResource Flecha}"/>
+                        <TextBlock Grid.Column="2" Style="{StaticResource Flecha}"/>
                     </Grid>
                 </Button>
 
                 <!-- ODOO -->
-                <Button Style="{StaticResource Tarjeta}"
-                        Tag="Integración con Odoo"
-                        Click="AbrirSeccion_Click">
+                <Button Style="{StaticResource Tarjeta}" Tag="Integración con Odoo" Click="AbrirSeccion_Click">
 
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -482,47 +312,28 @@
                             <ColumnDefinition Width="55"/>
                         </Grid.ColumnDefinitions>
 
-                        <Viewbox Width="70" Height="65"
-                                 HorizontalAlignment="Left">
+                        <Viewbox Width="70" Height="65" HorizontalAlignment="Left">
                             <Canvas Width="80" Height="75">
-                                <Rectangle Width="48" Height="26"
-                                           Canvas.Left="4" Canvas.Top="35"
-                                           RadiusX="12" RadiusY="12"
-                                           Stroke="#17483D"
-                                           StrokeThickness="4"
-                                           Fill="Transparent">
+                                <Rectangle Width="48" Height="26" Canvas.Left="4" Canvas.Top="35" RadiusX="12" RadiusY="12" Stroke="#17483D" StrokeThickness="4" Fill="Transparent">
                                     <Rectangle.RenderTransform>
-                                        <RotateTransform Angle="-45"
-                                                         CenterX="28"
-                                                         CenterY="48"/>
+                                        <RotateTransform Angle="-45" CenterX="28" CenterY="48"/>
                                     </Rectangle.RenderTransform>
                                 </Rectangle>
 
-                                <Rectangle Width="48" Height="26"
-                                           Canvas.Left="28" Canvas.Top="14"
-                                           RadiusX="12" RadiusY="12"
-                                           Stroke="#17483D"
-                                           StrokeThickness="4"
-                                           Fill="Transparent">
+                                <Rectangle Width="48" Height="26" Canvas.Left="28" Canvas.Top="14" RadiusX="12" RadiusY="12" Stroke="#17483D" StrokeThickness="4" Fill="Transparent">
                                     <Rectangle.RenderTransform>
-                                        <RotateTransform Angle="-45"
-                                                         CenterX="52"
-                                                         CenterY="27"/>
+                                        <RotateTransform Angle="-45" CenterX="52" CenterY="27"/>
                                     </Rectangle.RenderTransform>
                                 </Rectangle>
                             </Canvas>
                         </Viewbox>
 
-                        <StackPanel Grid.Column="1"
-                                    VerticalAlignment="Center">
-                            <TextBlock Text="Integración con Odoo"
-                                       Style="{StaticResource TituloTarjeta}"/>
-                            <TextBlock Text="Consulta y seguimiento de la integración con el sistema ERP."
-                                       Style="{StaticResource DescripcionTarjeta}"/>
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <TextBlock Text="Integración con Odoo" Style="{StaticResource TituloTarjeta}"/>
+                            <TextBlock Text="Consulta y seguimiento de la integración con el sistema ERP." Style="{StaticResource DescripcionTarjeta}"/>
                         </StackPanel>
 
-                        <TextBlock Grid.Column="2"
-                                   Style="{StaticResource Flecha}"/>
+                        <TextBlock Grid.Column="2" Style="{StaticResource Flecha}"/>
                     </Grid>
                 </Button>
 
@@ -530,299 +341,75 @@
         </ScrollViewer>
 
         <!-- CONTENEDOR DE NAVEGACIÓN PROVISIONAL -->
-        <Grid x:Name="SeccionPanel"
-              Grid.Row="1"
-              Visibility="Collapsed">
+        <Grid x:Name="SeccionPanel" Grid.Row="1" Visibility="Collapsed">
 
-            <StackPanel VerticalAlignment="Center"
-                        HorizontalAlignment="Center">
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
 
-                <TextBlock x:Name="TituloSeccion"
-                           FontSize="32"
-                           FontWeight="Bold"
-                           Foreground="#17483D"
-                           TextAlignment="Center"/>
+                <TextBlock x:Name="TituloSeccion" FontSize="32" FontWeight="Bold" Foreground="#17483D" TextAlignment="Center"/>
 
-                <TextBlock Text="Pantalla pendiente de integración"
-                           FontSize="18"
-                           Foreground="#252A27"
-                           HorizontalAlignment="Center"
-                           Margin="0,20,0,30"/>
+                <TextBlock Text="Pantalla pendiente de integración" FontSize="18" Foreground="#252A27" HorizontalAlignment="Center" Margin="0,20,0,30"/>
 
-                <Button Content="Volver al inicio"
-                        Width="210"
-                        Height="48"
-                        Background="#17483D"
-                        Foreground="White"
-                        FontSize="16"
-                        Cursor="Hand"
-                        Click="VolverInicio_Click"/>
+                <Button Content="Volver al inicio" Width="210" Height="48" Background="#17483D" Foreground="White" FontSize="16" Cursor="Hand" Click="VolverInicio_Click"/>
             </StackPanel>
         </Grid>
 
 
         <!-- GESTIÓN DE USUARIOS -->
-        <Grid x:Name="UsuariosPanel"
-      Grid.Row="1"
-      Visibility="Collapsed">
+        <Grid x:Name="UsuariosPanel" Grid.Row="1" Visibility="Collapsed">
 
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/></Grid.RowDefinitions>
 
             <!-- Cabecera -->
-            <StackPanel Grid.Row="0"
-                Margin="0,25,0,28">
+            <StackPanel Grid.Row="0" Margin="0,25,0,28">
 
-                <TextBlock Text="Gestión de usuarios"
-                   FontSize="34"
-                   FontWeight="Bold"
-                   Foreground="#17483D"/>
+                <TextBlock Text="Gestión de usuarios" FontSize="34" FontWeight="Bold" Foreground="#17483D"/>
 
-                <TextBlock Text="Usuarios registrados en GenteFit"
-                   FontSize="17"
-                   Foreground="#65756E"
-                   Margin="0,7,0,22"/>
+                <TextBlock Text="Usuarios registrados en GenteFit" FontSize="17" Foreground="#65756E" Margin="0,7,0,22"/>
 
                 <!-- Botón de regreso -->
-                <Button Content="Volver al inicio"
-                Width="205"
-                Height="46"
-                HorizontalAlignment="Left"
-                FontSize="16"
-                FontWeight="SemiBold"
-                Foreground="White"
-                Background="#17483D"
-                BorderThickness="0"
-                Cursor="Hand"
-                Click="VolverInicio_Click">
-
-                    <Button.Template>
-                        <ControlTemplate TargetType="Button">
-                            <Border x:Name="FondoBoton"
-                            Background="{TemplateBinding Background}"
-                            CornerRadius="7">
-
-                                <ContentPresenter
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"/>
-                            </Border>
-
-                            <ControlTemplate.Triggers>
-                                <Trigger Property="IsMouseOver"
-                                 Value="True">
-                                    <Setter TargetName="FondoBoton"
-                                    Property="Background"
-                                    Value="#286556"/>
-                                </Trigger>
-                            </ControlTemplate.Triggers>
-                        </ControlTemplate>
-                    </Button.Template>
-                </Button>
-
                 <!-- Buscador de usuarios -->
-                <Border Height="48"
-                    Margin="0,22,0,0"
-                    Background="#EDF3F0"
-                    BorderBrush="#C8D8D0"
-                    BorderThickness="1"
-                CornerRadius="9">
-
-                    <Grid>
-                        <TextBox x:Name="BuscarUsuarioTextBox"
-                 Margin="16,0"
-                 FontSize="16"
-                 Foreground="#17483D"
-                 Background="Transparent"
-                 BorderThickness="0"
-                 VerticalContentAlignment="Center"
-                 TextChanged="BuscarUsuarioTextBox_TextChanged"/>
-
-                        <TextBlock Text="Buscar usuario..."
-                   Margin="18,0"
-                   FontSize="16"
-                   Foreground="#82948A"
-                   VerticalAlignment="Center"
-                   IsHitTestVisible="False">
-
-                            <TextBlock.Style>
-                                <Style TargetType="TextBlock">
-                                    <Setter Property="Visibility"
-                            Value="Collapsed"/>
-                                    <Style.Triggers>
-                                        <DataTrigger
-                            Binding="{Binding Text, ElementName=BuscarUsuarioTextBox}"
-                            Value="">
-                                            <Setter Property="Visibility"
-                                    Value="Visible"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </TextBlock.Style>
-                        </TextBlock>
-                    </Grid>
-                </Border>
-
-            </StackPanel>
+                <componentes:BuscadorComun x:Name="BuscarUsuarioTextBox" Indicacion="Buscar usuario..." TextChanged="BuscarUsuarioTextBox_TextChanged" Margin="0,22,0,0"/></StackPanel>
 
             <!-- Contenedor de tabla -->
-            <Border Grid.Row="1"
-            Background="White"
-            BorderBrush="#C8D8D0"
-            BorderThickness="1"
-            CornerRadius="12"
-            ClipToBounds="True">
+            <Border Grid.Row="1" Background="White" BorderBrush="#C8D8D0" BorderThickness="1" CornerRadius="12" ClipToBounds="True">
 
-                <DataGrid x:Name="UsuariosDataGrid"
-                  AutoGenerateColumns="False"
-                  IsReadOnly="True"
-                  CanUserAddRows="False"
-                  CanUserDeleteRows="False"
-                  CanUserSortColumns="True"
-                  SelectionMode="Single"
-                  HeadersVisibility="Column"
-                  GridLinesVisibility="All"
-                  VerticalGridLinesBrush="#D5E2DA"
-                  HorizontalGridLinesBrush="#E5EEE9"
-                  RowHeaderWidth="0"
-                  RowHeight="64"
-                  ColumnHeaderHeight="54"
-                  FontSize="14"
-                  FontFamily="Poppins"
-                  Background="White"
-                  RowBackground="White"
-                  AlternatingRowBackground="#F6FAF8"
-                  AlternationCount="2"
-                  BorderThickness="0">
-
-                    <DataGrid.Resources>
-
-                        <!-- Cabeceras -->
-                        <Style TargetType="DataGridColumnHeader">
-                            <Setter Property="Background"
-                            Value="#E9F1EC"/>
-                            <Setter Property="Foreground"
-                            Value="#17483D"/>
-                            <Setter Property="FontWeight"
-                            Value="SemiBold"/>
-                            <Setter Property="FontSize"
-                            Value="14"/>
-                            <Setter Property="Padding"
-                            Value="14,0"/>
-                            <Setter Property="BorderBrush"
-                            Value="#D5E2DA"/>
-                            <Setter Property="BorderThickness"
-                            Value="0,0,0,1"/>
-                            <Setter Property="VerticalContentAlignment"
-                            Value="Center"/>
-                            <Setter Property="HorizontalContentAlignment"
-                            Value="Center"/>
-                        </Style>
-
-                        <!-- Filas -->
-                        <Style TargetType="DataGridRow">
-                            <Setter Property="BorderThickness"
-                            Value="0"/>
-                            <Style.Triggers>
-                                <Trigger Property="IsMouseOver"
-                                 Value="True">
-                                    <Setter Property="Background"
-                                    Value="#EAF4EE"/>
-                                </Trigger>
-                                <Trigger Property="IsSelected"
-                                 Value="True">
-                                    <Setter Property="Background"
-                                    Value="#DCECE3"/>
-                                    <Setter Property="Foreground"
-                                    Value="#17483D"/>
-                                </Trigger>
-                            </Style.Triggers>
-                        </Style>
-
-                        <!-- Celdas -->
-                        <Style TargetType="DataGridCell">
-                            <Setter Property="Padding"
-                            Value="14,8"/>
-                            <Setter Property="BorderThickness"
-                            Value="0"/>
-                            <Setter Property="VerticalContentAlignment"
-                            Value="Center"/>
-                            <Setter Property="FocusVisualStyle"
-                            Value="{x:Null}"/>
-                        </Style>
-
-                        <!-- Texto centrado en las columnas -->
-                        <Style x:Key="TextoCeldaCentrado"
-                            TargetType="TextBlock">
-                            <Setter Property="TextAlignment"
-                            Value="Center"/>
-                            <Setter Property="VerticalAlignment"
-                            Value="Center"/>
-                            <Setter Property="Margin"
-                            Value="8,0"/>
-                        </Style>
-
-
-                    </DataGrid.Resources>
+                <DataGrid x:Name="UsuariosDataGrid" Style="{StaticResource TablaAdmin}">
 
                     <DataGrid.Columns>
 
 
-                        <DataGridTextColumn Header="ID"
-                            Binding="{Binding Id}"
-                            ElementStyle="{StaticResource TextoCeldaCentrado}"
-                            Width="65"/>
+                        <DataGridTextColumn Header="ID" Binding="{Binding Id}" ElementStyle="{StaticResource TextoCeldaAdmin}" Width="65"/>
 
-                        <DataGridTextColumn Header="Usuario"
-                            Binding="{Binding Username}"
-                            ElementStyle="{StaticResource TextoCeldaCentrado}"
-                            Width="*"/>
+                        <DataGridTextColumn Header="Usuario" Binding="{Binding Username}" ElementStyle="{StaticResource TextoCeldaAdmin}" Width="*"/>
 
-                        <DataGridTextColumn Header="Nombre"
-                            Binding="{Binding Name}"
-                            ElementStyle="{StaticResource TextoCeldaCentrado}"
-                            Width="*"/>
+                        <DataGridTextColumn Header="Nombre" Binding="{Binding Name}" ElementStyle="{StaticResource TextoCeldaAdmin}" Width="*"/>
 
-                        <DataGridTextColumn Header="Apellidos"
-                            Binding="{Binding Surname}"
-                            ElementStyle="{StaticResource TextoCeldaCentrado}"
-                            Width="*"/>
+                        <DataGridTextColumn Header="Apellidos" Binding="{Binding Surname}" ElementStyle="{StaticResource TextoCeldaAdmin}" Width="*"/>
 
-                        <DataGridTextColumn Header="Correo electrónico"
-                            Binding="{Binding Email}"
-                            ElementStyle="{StaticResource TextoCeldaCentrado}"
-                            Width="2*"/>
+                        <DataGridTextColumn Header="Correo electrónico" Binding="{Binding Email}" ElementStyle="{StaticResource TextoCeldaAdmin}" Width="2*"/>
 
 
                         <!-- Estado con colores -->
-                        <DataGridTemplateColumn Header="Estado"
-                                        Width="110">
+                        <DataGridTemplateColumn Header="Estado" Width="110">
 
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <TextBlock
-                                HorizontalAlignment="Center"
-                                VerticalAlignment="Center"
-                                FontWeight="SemiBold">
+                                    <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="SemiBold">
 
                                         <TextBlock.Style>
                                             <Style TargetType="TextBlock">
 
-                                                <Setter Property="Text"
-                                                Value="Activo"/>
-                                                <Setter Property="Foreground"
-                                                Value="#009C57"/>
+                                                <Setter Property="Text" Value="Activo"/>
+                                                <Setter Property="Foreground" Value="#009C57"/>
 
                                                 <Style.Triggers>
-                                                    <DataTrigger
-                                                Binding="{Binding Active}"
-                                                Value="False">
+                                                    <DataTrigger Binding="{Binding Active}" Value="False">
 
-                                                        <Setter Property="Text"
-                                                        Value="Inactivo"/>
-                                                        <Setter Property="Foreground"
-                                                        Value="#A32020"/>
+                                                        <Setter Property="Text" Value="Inactivo"/>
+                                                        <Setter Property="Foreground" Value="#A32020"/>
                                                     </DataTrigger>
                                                 </Style.Triggers>
 
@@ -838,13 +425,7 @@
                         <DataGridTemplateColumn Header="Ficha" Width="100">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <Button Content="Ver"
-                                            Width="65" Height="34"
-                                            Background="#17483D"
-                                            Foreground="White"
-                                            BorderThickness="0"
-                                            Cursor="Hand"
-                                            Click="VerUsuario_Click"/>
+                                    <Button Content="Ver" Width="65" Height="34" Background="#17483D" Foreground="White" BorderThickness="0" Cursor="Hand" Click="VerUsuario_Click"/>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
@@ -854,25 +435,11 @@
             </Border>
 
             <!-- Ficha de consulta, sobre la tabla de usuarios -->
-            <Grid x:Name="DetalleUsuarioPanel"
-                  Grid.Row="1"
-                  Panel.ZIndex="10"
-                  Background="#88000000"
-                  Visibility="Collapsed">
-                <Border Width="500"
-                        MaxHeight="480"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Center"
-                        Background="White"
-                        CornerRadius="12"
-                        Padding="28">
+            <Grid x:Name="DetalleUsuarioPanel" Grid.Row="1" Panel.ZIndex="10" Background="#88000000" Visibility="Collapsed">
+                <Border Width="500" MaxHeight="480" HorizontalAlignment="Center" VerticalAlignment="Center" Background="White" CornerRadius="12" Padding="28">
                     <ScrollViewer VerticalScrollBarVisibility="Auto">
                         <StackPanel>
-                            <TextBlock Text="Ficha del usuario"
-                                       FontSize="25"
-                                       FontWeight="Bold"
-                                       Foreground="#17483D"
-                                       Margin="0,0,0,20"/>
+                            <TextBlock Text="Ficha del usuario" FontSize="25" FontWeight="Bold" Foreground="#17483D" Margin="0,0,0,20"/>
                             <TextBlock Text="Identificador" Foreground="#65756E"/>
                             <TextBlock Text="{Binding Id}" FontSize="17" Margin="0,2,0,12"/>
                             <TextBlock Text="Nombre de usuario" Foreground="#65756E"/>
@@ -902,30 +469,11 @@
 
 
 
-                            <Button Content="Editar usuario"
-        Width="200"
-        Height="42"
-        Margin="0,0,0,12"
-        Style="{StaticResource BotonFichaRedondeado}"
-        Background="#3C7667"
-        Click="EditarUsuario_Click"/>
+                            <Button Content="Editar usuario" Width="200" Height="42" Margin="0,0,0,12" Style="{StaticResource BotonFichaRedondeado}" Background="#3C7667" Click="EditarUsuario_Click"/>
 
-                            <Button Content="Cerrar ficha"
-        Width="200"
-        Height="42"
-        Margin="0,0,0,12"
-        Style="{StaticResource BotonFichaRedondeado}"
-        Background="#17483D"
-        Click="CerrarDetalleUsuario_Click"/>
+                            <Button Content="Cerrar ficha" Width="200" Height="42" Margin="0,0,0,12" Style="{StaticResource BotonFichaRedondeado}" Background="#17483D" Click="CerrarDetalleUsuario_Click"/>
 
-                            <Button x:Name="CambiarEstadoUsuarioButton"
-        Content="Desactivar usuario"
-        Width="200"
-        Height="42"
-        Margin="0"
-        Style="{StaticResource BotonFichaRedondeado}"
-        Background="#A32020"
-        Click="CambiarEstadoUsuario_Click"/>
+                            <Button x:Name="CambiarEstadoUsuarioButton" Content="Desactivar usuario" Width="200" Height="42" Margin="0" Style="{StaticResource BotonFichaRedondeado}" Background="#A32020" Click="CambiarEstadoUsuario_Click"/>
 
 
 
@@ -933,6 +481,7 @@
                     </ScrollViewer>
                 </Border>
             </Grid>
-        </Grid>
-    </Grid>
+        <Button Content="Cerrar" Style="{StaticResource BotonCerrarAdmin}" Click="VolverInicio_Click" Grid.Row="2" Margin="0,18,0,0"/></Grid>
+    <ContentControl x:Name="ContenidoSeccion" Grid.Row="1" Visibility="Collapsed" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"/>
+    <componentes:CabeceraComun Grid.Row="0" Rol="Administrador" VerticalAlignment="Top"/></Grid>
 </Window>

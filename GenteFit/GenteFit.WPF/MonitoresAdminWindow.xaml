@@ -1,10 +1,5 @@
-<Window x:Class="GenteFit.WPF.MonitoresAdminWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="GenteFit - Gestión de monitores"
-        Width="1090" Height="720" MinWidth="820" MinHeight="550"
-        WindowStartupLocation="CenterOwner" Background="#FBF8F1" FontFamily="Poppins">
-    <Window.Resources>
+<UserControl xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:componentes="clr-namespace:GenteFit.WPF.Components" x:Class="GenteFit.WPF.MonitoresAdminWindow" Background="#FBF8F1" FontFamily="Poppins">
+    <UserControl.Resources>
         <Style x:Key="BotonRedondeado" TargetType="Button">
             <Setter Property="Foreground" Value="White"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
@@ -30,61 +25,7 @@
                 </Setter.Value>
             </Setter>
         </Style>
-        <Style TargetType="DataGrid">
-            <Setter Property="AutoGenerateColumns" Value="False"/>
-            <Setter Property="IsReadOnly" Value="True"/>
-            <Setter Property="CanUserAddRows" Value="False"/>
-            <Setter Property="CanUserDeleteRows" Value="False"/>
-            <Setter Property="CanUserResizeRows" Value="False"/>
-            <Setter Property="SelectionMode" Value="Single"/>
-            <Setter Property="HeadersVisibility" Value="Column"/>
-            <Setter Property="GridLinesVisibility" Value="All"/>
-            <Setter Property="VerticalGridLinesBrush" Value="#D5E2DA"/>
-            <Setter Property="HorizontalGridLinesBrush" Value="#E5EEE9"/>
-            <Setter Property="RowHeaderWidth" Value="0"/>
-            <Setter Property="RowHeight" Value="64"/>
-            <Setter Property="ColumnHeaderHeight" Value="54"/>
-            <Setter Property="FontSize" Value="14"/>
-            <Setter Property="RowBackground" Value="White"/>
-            <Setter Property="AlternatingRowBackground" Value="#F6FAF8"/>
-            <Setter Property="AlternationCount" Value="2"/>
-            <Setter Property="BorderThickness" Value="0"/>
-        </Style>
-        <Style TargetType="DataGridColumnHeader">
-            <Setter Property="Background" Value="#E9F1EC"/>
-            <Setter Property="Foreground" Value="#17483D"/>
-            <Setter Property="FontWeight" Value="SemiBold"/>
-            <Setter Property="FontSize" Value="14"/>
-            <Setter Property="Padding" Value="10,0"/>
-            <Setter Property="BorderBrush" Value="#D5E2DA"/>
-            <Setter Property="BorderThickness" Value="0,0,0,1"/>
-            <Setter Property="VerticalContentAlignment" Value="Center"/>
-            <Setter Property="HorizontalContentAlignment" Value="Center"/>
-        </Style>
-        <Style TargetType="DataGridRow">
-            <Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#EAF4EE"/>
-                </Trigger>
-                <Trigger Property="IsSelected" Value="True">
-                    <Setter Property="Background" Value="#DCECE3"/>
-                    <Setter Property="Foreground" Value="#17483D"/>
-                </Trigger>
-            </Style.Triggers>
-        </Style>
-        <Style TargetType="DataGridCell">
-            <Setter Property="Padding" Value="10,8"/>
-            <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="VerticalContentAlignment" Value="Center"/>
-            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
-        </Style>
-        <Style x:Key="TextoCelda" TargetType="TextBlock">
-            <Setter Property="TextAlignment" Value="Center"/>
-            <Setter Property="VerticalAlignment" Value="Center"/>
-            <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
-            <Setter Property="Margin" Value="8,0"/>
-        </Style>
-        <Style x:Key="TextoEstado" TargetType="TextBlock" BasedOn="{StaticResource TextoCelda}">
+        <Style x:Key="TextoEstado" TargetType="TextBlock" BasedOn="{StaticResource TextoCeldaAdmin}">
             <Setter Property="Foreground" Value="#17483D"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
             <Style.Triggers>
@@ -93,12 +34,12 @@
                 </DataTrigger>
             </Style.Triggers>
         </Style>
-    </Window.Resources>
-    <Grid Margin="45,32">
+    </UserControl.Resources>
+    <Grid Margin="0,10,0,0">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/><RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
@@ -109,40 +50,30 @@
             </Grid.ColumnDefinitions>
             <StackPanel>
                 <TextBlock Text="Gestión de monitores" FontSize="30" FontWeight="Bold" Foreground="#17483D"/>
-                <TextBlock Text="Consulta y mantenimiento de los monitores de GenteFit"
-                           Foreground="#71877F" FontSize="14" Margin="0,5,0,0"/>
+                <TextBlock Text="Consulta y mantenimiento de los monitores de GenteFit" Foreground="#71877F" FontSize="14" Margin="0,5,0,0"/>
             </StackPanel>
-            <Button Grid.Column="1" Content="Actualizar" Width="130" Background="#3C7667"
-                    Style="{StaticResource BotonRedondeado}" Click="Actualizar_Click"
-                    VerticalAlignment="Center"/>
+            <Button Grid.Column="1" Content="Actualizar" Width="130" Background="#3C7667" Style="{StaticResource BotonRedondeado}" Click="Actualizar_Click" VerticalAlignment="Center"/>
         </Grid>
-        <TextBlock x:Name="EstadoTextBlock" Grid.Row="1" Foreground="#71877F"
-                   FontSize="13" Margin="0,0,0,14"/>
-        <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,0,0,14">
-            <Button Content="Nuevo monitor" Width="155" Background="#17483D"
-                    Style="{StaticResource BotonRedondeado}" Click="NuevoMonitor_Click"/>
-            <Button Content="Editar seleccionado" Width="175" Margin="10,0,0,0" Background="#3C7667"
-                    Style="{StaticResource BotonRedondeado}" Click="EditarMonitor_Click"/>
-            <Button Content="Activar / desactivar" Width="180" Margin="10,0,0,0" Background="#A32020"
-                    Style="{StaticResource BotonRedondeado}" Click="CambiarEstado_Click"/>
+        <TextBlock x:Name="EstadoTextBlock" Grid.Row="1" Foreground="#71877F" FontSize="13" Margin="0,0,0,14"/>
+        <componentes:BuscadorComun x:Name="BuscarTextBox" Indicacion="Buscar monitor..." TextChanged="BuscarTextBox_TextChanged" Grid.Row="2" Margin="0,0,0,14"/><StackPanel Grid.Row="3" Orientation="Horizontal" Margin="0,0,0,14">
+            <Button Content="Nuevo monitor" Width="155" Background="#17483D" Style="{StaticResource BotonRedondeado}" Click="NuevoMonitor_Click"/>
+            <Button Content="Editar seleccionado" Width="175" Margin="10,0,0,0" Background="#3C7667" Style="{StaticResource BotonRedondeado}" Click="EditarMonitor_Click"/>
+            <Button Content="Activar / desactivar" Width="180" Margin="10,0,0,0" Background="#A32020" Style="{StaticResource BotonRedondeado}" Click="CambiarEstado_Click"/>
         </StackPanel>
-        <Border Grid.Row="3" Background="White" BorderBrush="#C8D8D0"
-                BorderThickness="1" CornerRadius="12" ClipToBounds="True">
-            <DataGrid x:Name="MonitoresDataGrid">
+        <Border Grid.Row="4" Background="White" BorderBrush="#C8D8D0" BorderThickness="1" CornerRadius="12" ClipToBounds="True">
+            <DataGrid x:Name="MonitoresDataGrid" Style="{StaticResource TablaAdmin}">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="ID" Binding="{Binding Id}" ElementStyle="{StaticResource TextoCelda}" Width="55"/>
-                    <DataGridTextColumn Header="Nombre" Binding="{Binding Nombre}" ElementStyle="{StaticResource TextoCelda}" Width="1.4*"/>
-                    <DataGridTextColumn Header="Apellidos" Binding="{Binding Apellidos}" ElementStyle="{StaticResource TextoCelda}" Width="1.5*"/>
-                    <DataGridTextColumn Header="Usuario" Binding="{Binding Usuario}" ElementStyle="{StaticResource TextoCelda}" Width="1.3*"/>
-                    <DataGridTextColumn Header="DNI" Binding="{Binding Dni}" ElementStyle="{StaticResource TextoCelda}" Width="*"/>
-                    <DataGridTextColumn Header="Especialidad" Binding="{Binding Especialidad}" ElementStyle="{StaticResource TextoCelda}" Width="1.6*"/>
-                    <DataGridTextColumn Header="Correo" Binding="{Binding Correo}" ElementStyle="{StaticResource TextoCelda}" Width="2*"/>
+                    <DataGridTextColumn Header="ID" Binding="{Binding Id}" ElementStyle="{StaticResource TextoCeldaAdmin}" Width="55"/>
+                    <DataGridTextColumn Header="Nombre" Binding="{Binding Nombre}" ElementStyle="{StaticResource TextoCeldaAdmin}" Width="1.4*"/>
+                    <DataGridTextColumn Header="Apellidos" Binding="{Binding Apellidos}" ElementStyle="{StaticResource TextoCeldaAdmin}" Width="1.5*"/>
+                    <DataGridTextColumn Header="Usuario" Binding="{Binding Usuario}" ElementStyle="{StaticResource TextoCeldaAdmin}" Width="1.3*"/>
+                    <DataGridTextColumn Header="DNI" Binding="{Binding Dni}" ElementStyle="{StaticResource TextoCeldaAdmin}" Width="*"/>
+                    <DataGridTextColumn Header="Especialidad" Binding="{Binding Especialidad}" ElementStyle="{StaticResource TextoCeldaAdmin}" Width="1.6*"/>
+                    <DataGridTextColumn Header="Correo" Binding="{Binding Correo}" ElementStyle="{StaticResource TextoCeldaAdmin}" Width="2*"/>
                     <DataGridTextColumn Header="Estado" Binding="{Binding Estado}" ElementStyle="{StaticResource TextoEstado}" Width="*"/>
                 </DataGrid.Columns>
             </DataGrid>
         </Border>
-        <Button Grid.Row="4" Content="Cerrar" Width="160" Background="#17483D"
-                HorizontalAlignment="Right" Margin="0,20,0,0"
-                Style="{StaticResource BotonRedondeado}" Click="Cerrar_Click"/>
+        <Button Grid.Row="5" Content="Cerrar" Margin="0,20,0,0" Style="{StaticResource BotonCerrarAdmin}" Click="Cerrar_Click"/>
     </Grid>
-</Window>
+</UserControl>

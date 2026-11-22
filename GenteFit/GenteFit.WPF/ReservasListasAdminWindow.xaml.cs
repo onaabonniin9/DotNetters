@@ -3,13 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using GenteFit.Models;
 using GenteFit.WPF.Services;
 
 namespace GenteFit.WPF;
 
-public partial class ReservasListasAdminWindow : Window
+public partial class ReservasListasAdminWindow : UserControl
 {
+    public event EventHandler? SolicitarInicio;
+
+
     private readonly UsuarioAutenticado _usuarioActual;
     private List<ReservaAdminResumen> _reservas = new();
     private List<ListaEsperaAdminResumen> _listas = new();
@@ -42,14 +46,14 @@ public partial class ReservasListasAdminWindow : Window
         catch (UnauthorizedAccessException ex)
         {
             EstadoTextBlock.Text = "Acceso denegado";
-            MessageBox.Show(this, ex.Message, "Acceso denegado",
+            MessageBox.Show(Window.GetWindow(this)!, ex.Message, "Acceso denegado",
                 MessageBoxButton.OK, MessageBoxImage.Warning);
-            Close();
+            SolicitarInicio?.Invoke(this, EventArgs.Empty);
         }
         catch (Exception)
         {
             EstadoTextBlock.Text = "No se han podido cargar los datos";
-            MessageBox.Show(this,
+            MessageBox.Show(Window.GetWindow(this)!,
                 "No se han podido consultar las reservas y listas de espera. Comprueba la conexión con SQL Server.",
                 "GenteFit", MessageBoxButton.OK, MessageBoxImage.Error);
         }
@@ -92,5 +96,5 @@ public partial class ReservasListasAdminWindow : Window
     private async void Actualizar_Click(object sender, RoutedEventArgs e)
         => await CargarDatosAsync();
 
-    private void Cerrar_Click(object sender, RoutedEventArgs e) => Close();
+    private void Cerrar_Click(object sender, RoutedEventArgs e) => SolicitarInicio?.Invoke(this, EventArgs.Empty);
 }

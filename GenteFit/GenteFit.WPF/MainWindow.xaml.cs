@@ -1,4 +1,4 @@
-﻿
+
 using System.Windows;
 using System.Windows.Controls;
 
@@ -134,6 +134,7 @@ namespace GenteFit.WPF
                         "Este tipo de usuario no tiene acceso a la aplicación.")
                 };
 
+                GenteFit.WPF.Components.SesionVisual.UsuarioActual = usuarioAutenticado;
                 panel.Show();
 
                 Close();

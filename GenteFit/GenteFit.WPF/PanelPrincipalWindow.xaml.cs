@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -74,15 +74,12 @@ namespace GenteFit.WPF
                 return;
             }
 
-            // Abrir la gestión de actividades y sesiones
+            ContenidoSeccion.Content = null;
+            ContenidoSeccion.Visibility = Visibility.Collapsed;
+
             if (seccion == "Actividades y sesiones")
             {
-                var ventana = new ActividadesSesionesAdminWindow(UsuarioActual)
-                {
-                    Owner = this
-                };
-
-                ventana.ShowDialog();
+                MostrarVistaAdministracion(new ActividadesSesionesAdminWindow(UsuarioActual));
                 return;
             }
 
@@ -118,15 +115,13 @@ namespace GenteFit.WPF
 
             if (seccion == "Monitores")
             {
-                new MonitoresAdminWindow(UsuarioActual) { Owner = this }.ShowDialog();
-                InicioPanel.Visibility = Visibility.Visible;
+                MostrarVistaAdministracion(new MonitoresAdminWindow(UsuarioActual));
                 return;
             }
 
             if (seccion == "Reservas y listas de espera")
             {
-                new ReservasListasAdminWindow(UsuarioActual) { Owner = this }.ShowDialog();
-                InicioPanel.Visibility = Visibility.Visible;
+                MostrarVistaAdministracion(new ReservasListasAdminWindow(UsuarioActual));
                 return;
             }
 
@@ -385,8 +380,30 @@ namespace GenteFit.WPF
             Close();
         }
 
+        public void MostrarInicioDesdeCabecera() => MostrarInicio();
+
+        private void MostrarVistaAdministracion(UserControl vista)
+        {
+            InicioPanel.Visibility = Visibility.Collapsed;
+            SeccionPanel.Visibility = Visibility.Collapsed;
+            UsuariosPanel.Visibility = Visibility.Collapsed;
+            DetalleUsuarioPanel.Visibility = Visibility.Collapsed;
+
+            if (vista is ActividadesSesionesAdminWindow actividades)
+                actividades.SolicitarInicio += (_, _) => MostrarInicio();
+            else if (vista is MonitoresAdminWindow monitores)
+                monitores.SolicitarInicio += (_, _) => MostrarInicio();
+            else if (vista is ReservasListasAdminWindow reservas)
+                reservas.SolicitarInicio += (_, _) => MostrarInicio();
+
+            ContenidoSeccion.Content = vista;
+            ContenidoSeccion.Visibility = Visibility.Visible;
+        }
+
         private void MostrarInicio()
         {
+            ContenidoSeccion.Content = null;
+            ContenidoSeccion.Visibility = Visibility.Collapsed;
             DetalleUsuarioPanel.Visibility = Visibility.Collapsed;
             UsuariosPanel.Visibility = Visibility.Collapsed;
             SeccionPanel.Visibility = Visibility.Collapsed;

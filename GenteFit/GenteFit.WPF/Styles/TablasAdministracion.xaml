@@ -1,0 +1,90 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Style x:Key="CabeceraTablaAdmin" TargetType="DataGridColumnHeader">
+        <Setter Property="Background" Value="#E9F1EC"/>
+        <Setter Property="Foreground" Value="#17483D"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="FontSize" Value="14"/>
+        <Setter Property="Padding" Value="10,0"/>
+        <Setter Property="BorderBrush" Value="#D5E2DA"/>
+        <Setter Property="BorderThickness" Value="0,0,0,1"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+    </Style>
+    <Style x:Key="FilaTablaAdmin" TargetType="DataGridRow">
+        <Setter Property="BorderThickness" Value="0"/>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="#EAF4EE"/>
+            </Trigger>
+            <Trigger Property="IsSelected" Value="True">
+                <Setter Property="Background" Value="#DCECE3"/>
+                <Setter Property="Foreground" Value="#17483D"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+    <Style x:Key="CeldaTablaAdmin" TargetType="DataGridCell">
+        <Setter Property="Padding" Value="10,8"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+        <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+    </Style>
+    <Style x:Key="TextoCeldaAdmin" TargetType="TextBlock">
+        <Setter Property="TextAlignment" Value="Center"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
+        <Setter Property="Margin" Value="8,0"/>
+    </Style>
+    <Style x:Key="TablaAdmin" TargetType="DataGrid">
+        <Setter Property="AutoGenerateColumns" Value="False"/>
+        <Setter Property="IsReadOnly" Value="True"/>
+        <Setter Property="CanUserAddRows" Value="False"/>
+        <Setter Property="CanUserDeleteRows" Value="False"/>
+        <Setter Property="CanUserResizeRows" Value="False"/>
+        <Setter Property="CanUserSortColumns" Value="True"/>
+        <Setter Property="SelectionMode" Value="Single"/>
+        <Setter Property="HeadersVisibility" Value="Column"/>
+        <Setter Property="GridLinesVisibility" Value="All"/>
+        <Setter Property="VerticalGridLinesBrush" Value="#D5E2DA"/>
+        <Setter Property="HorizontalGridLinesBrush" Value="#E5EEE9"/>
+        <Setter Property="RowHeaderWidth" Value="0"/>
+        <Setter Property="RowHeight" Value="64"/>
+        <Setter Property="ColumnHeaderHeight" Value="54"/>
+        <Setter Property="FontSize" Value="14"/>
+        <Setter Property="FontFamily" Value="Poppins"/>
+        <Setter Property="Background" Value="White"/>
+        <Setter Property="RowBackground" Value="White"/>
+        <Setter Property="AlternatingRowBackground" Value="#F6FAF8"/>
+        <Setter Property="AlternationCount" Value="2"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="ColumnHeaderStyle" Value="{StaticResource CabeceraTablaAdmin}"/>
+        <Setter Property="RowStyle" Value="{StaticResource FilaTablaAdmin}"/>
+        <Setter Property="CellStyle" Value="{StaticResource CeldaTablaAdmin}"/>
+    </Style>
+    <Style x:Key="BotonCerrarAdmin" TargetType="Button">
+        <Setter Property="Width" Value="160"/>
+        <Setter Property="Height" Value="42"/>
+        <Setter Property="Background" Value="#17483D"/>
+        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="FontSize" Value="14"/>
+        <Setter Property="FontFamily" Value="Poppins"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="HorizontalAlignment" Value="Right"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="Fondo" Background="{TemplateBinding Background}" CornerRadius="10">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Fondo" Property="Opacity" Value="0.85"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>
