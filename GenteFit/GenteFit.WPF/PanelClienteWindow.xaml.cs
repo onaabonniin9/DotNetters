@@ -101,5 +101,18 @@ namespace GenteFit.WPF
             _context.Dispose();
             base.OnClosed(e);
         }
+        private void Cabecera_InicioSolicitado(object sender, EventArgs e)
+        {
+            // Ya estamos en Inicio.
+
+        }
+
+        private void Cabecera_CerrarSesionSolicitado(object sender, EventArgs e)
+        {
+            var inicio = new MainWindow();
+            inicio.Show();
+            Close();
+        }
+
     }
 }

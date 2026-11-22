@@ -352,5 +352,19 @@ namespace GenteFit.WPF
             _context.Dispose();
             base.OnClosed(e);
         }
+        private void Cabecera_InicioSolicitado(object sender, EventArgs e)
+        {
+            var panel = new PanelClienteWindow(_usuarioAutenticado);
+            panel.Show();
+            Close();
+        }
+
+        private void Cabecera_CerrarSesionSolicitado(object sender, EventArgs e)
+        {
+            var inicio = new MainWindow();
+            inicio.Show();
+            Close();
+        }
+
     }
 }
