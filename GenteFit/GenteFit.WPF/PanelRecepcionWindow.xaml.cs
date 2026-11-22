@@ -1,5 +1,5 @@
 using System;
-using Syste.Windows;
+using System.Windows;
 using GenteFit.Models;
 
 namespace GenteFit.WPF

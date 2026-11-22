@@ -30,7 +30,7 @@
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
         
-        <TextBlock x:Name="TxtResumen" Grid.Row="0" ForeGround="White" FontSize="13" Margin="4,0,0,8"/>
+        <TextBlock x:Name="TxtResumen" Grid.Row="0" Foreground="White" FontSize="13" Margin="4,0,0,8"/>
 
         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
                 <ItemsControl x:Name="ListaClientes">
