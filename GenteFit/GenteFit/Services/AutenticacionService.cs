@@ -41,6 +41,27 @@ public class AutenticacionService
                 null);
         }
 
+        var recepcionista = await contexto.Recepcionistas
+            .AsNoTracking()
+            .FirstOrDefaultAsync(r =>
+                r.Username == username && r.Active);
+        
+        if (recepcionista is not null &&
+            SeguridadContrasenas.Verificar(
+                password,
+                recepcionista.Password))
+        {
+            return new UsuarioAutenticado(
+                recepcionista.Id,
+                recepcionista.Username,
+                recepcionista.Name,
+                recepcionista.Surname,
+                TipoCuentaUsuario.Recepcionista,
+                null);
+            
+        }
+
+
         var cliente = await contexto.Clientes
             .AsNoTracking()
             .FirstOrDefaultAsync(c =>

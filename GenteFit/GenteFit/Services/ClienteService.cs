@@ -1,4 +1,5 @@
 ﻿
+using System.Drawing;
 using GenteFit.Data;
 using GenteFit.Models;
 using Microsoft.EntityFrameworkCore;
@@ -41,6 +42,59 @@ public class ClienteService
             .ThenBy(c => c.Name)
             .ToListAsync();
     }
+
+    public async Task<List<Cliente>> ConsultarParaRecepcionistaAsync(
+        UsuarioAutenticado usuarioActual,
+        string? texto = null)
+    {
+        await AutorizacionService.ExigirPersonalRecepcionActivoAsync(
+            _context, usuarioActual);
+        
+        IQueryable<Cliente> consulta=_context.Clientes.AsNoTracking();
+        if (!string.IsNullOrWhiteSpace(texto))
+        {
+            string t = texto.Trim();
+            
+            consulta = consulta.Where(c =>
+                c.Name.Contains(t) || 
+                c.Surname.Contains(t) ||
+                c.Username.Contains(t) ||
+                c.DNI.Contains(t) ||
+                c.Email.Contains(t));
+        }
+
+        return await consulta
+        .OrderBy(c => c.Surname)
+        .ThenBy(c => c.Name)
+        .ToListAsync();
+    }
+
+    public async Task<List<Cliente>> ConsultarParaRececpcionAsync(
+        UsuarioAutenticado usuarioActual,
+        string? texto =null)
+        {
+            await AutorizacionService.ExigirPersonalRecepcionActivoAsync(
+                _context, usuarioActual);
+            
+            IQueryable<Cliente> consulta =_context.Clientes.AsNoTracking();
+
+        if (!string.IsNullOrWhiteSpace(texto))
+        {
+            string t =texto.Trim();
+
+            consulta = consulta.Where(c =>
+            c.Name.Contains(t) ||
+            c.Surname.Contains(t) ||
+            c.Username.Contains(t) ||
+            c.DNI.Contains(t) ||
+            c.Email.Contains(t));
+        }
+
+        return await consulta
+        .OrderBy(c => c.Surname)
+        .ThenBy(c => c.Name)
+        .ToListAsync();
+        }
 
     public async Task<Cliente?> ConsultarPorIdAsync(int id)
     {

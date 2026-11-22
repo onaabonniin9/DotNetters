@@ -124,6 +124,9 @@ namespace GenteFit.WPF
                     GenteFit.Models.TipoCuentaUsuario.Administrador =>
                         new PanelPrincipalWindow(usuarioAutenticado),
 
+                    GenteFit.Models.TipoCuentaUsuario.Recepcionista =>
+                        new PanelPrincipalWindow(usuarioAutenticado),
+
                     GenteFit.Models.TipoCuentaUsuario.Cliente =>
                         new PanelClienteWindow(usuarioAutenticado),
 
