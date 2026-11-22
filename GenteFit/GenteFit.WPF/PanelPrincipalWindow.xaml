@@ -360,7 +360,7 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/></Grid.RowDefinitions>
 
             <!-- Cabecera -->
             <StackPanel Grid.Row="0" Margin="0,25,0,28">
@@ -370,112 +370,26 @@
                 <TextBlock Text="Usuarios registrados en GenteFit" FontSize="17" Foreground="#65756E" Margin="0,7,0,22"/>
 
                 <!-- Botón de regreso -->
-                <Button Content="Volver al inicio" Width="205" Height="46" HorizontalAlignment="Left" FontSize="16" FontWeight="SemiBold" Foreground="White" Background="#17483D" BorderThickness="0" Cursor="Hand" Click="VolverInicio_Click">
-
-                    <Button.Template>
-                        <ControlTemplate TargetType="Button">
-                            <Border x:Name="FondoBoton" Background="{TemplateBinding Background}" CornerRadius="7">
-
-                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                            </Border>
-
-                            <ControlTemplate.Triggers>
-                                <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter TargetName="FondoBoton" Property="Background" Value="#286556"/>
-                                </Trigger>
-                            </ControlTemplate.Triggers>
-                        </ControlTemplate>
-                    </Button.Template>
-                </Button>
-
                 <!-- Buscador de usuarios -->
-                <Border Height="48" Margin="0,22,0,0" Background="#EDF3F0" BorderBrush="#C8D8D0" BorderThickness="1" CornerRadius="9">
-
-                    <Grid>
-                        <TextBox x:Name="BuscarUsuarioTextBox" Margin="16,0" FontSize="16" Foreground="#17483D" Background="Transparent" BorderThickness="0" VerticalContentAlignment="Center" TextChanged="BuscarUsuarioTextBox_TextChanged"/>
-
-                        <TextBlock Text="Buscar usuario..." Margin="18,0" FontSize="16" Foreground="#82948A" VerticalAlignment="Center" IsHitTestVisible="False">
-
-                            <TextBlock.Style>
-                                <Style TargetType="TextBlock">
-                                    <Setter Property="Visibility" Value="Collapsed"/>
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding Text, ElementName=BuscarUsuarioTextBox}" Value="">
-                                            <Setter Property="Visibility" Value="Visible"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </TextBlock.Style>
-                        </TextBlock>
-                    </Grid>
-                </Border>
-
-            </StackPanel>
+                <componentes:BuscadorComun x:Name="BuscarUsuarioTextBox" Indicacion="Buscar usuario..." TextChanged="BuscarUsuarioTextBox_TextChanged" Margin="0,22,0,0"/></StackPanel>
 
             <!-- Contenedor de tabla -->
             <Border Grid.Row="1" Background="White" BorderBrush="#C8D8D0" BorderThickness="1" CornerRadius="12" ClipToBounds="True">
 
-                <DataGrid x:Name="UsuariosDataGrid" AutoGenerateColumns="False" IsReadOnly="True" CanUserAddRows="False" CanUserDeleteRows="False" CanUserSortColumns="True" SelectionMode="Single" HeadersVisibility="Column" GridLinesVisibility="All" VerticalGridLinesBrush="#D5E2DA" HorizontalGridLinesBrush="#E5EEE9" RowHeaderWidth="0" RowHeight="64" ColumnHeaderHeight="54" FontSize="14" FontFamily="Poppins" Background="White" RowBackground="White" AlternatingRowBackground="#F6FAF8" AlternationCount="2" BorderThickness="0">
-
-                    <DataGrid.Resources>
-
-                        <!-- Cabeceras -->
-                        <Style TargetType="DataGridColumnHeader">
-                            <Setter Property="Background" Value="#E9F1EC"/>
-                            <Setter Property="Foreground" Value="#17483D"/>
-                            <Setter Property="FontWeight" Value="SemiBold"/>
-                            <Setter Property="FontSize" Value="14"/>
-                            <Setter Property="Padding" Value="14,0"/>
-                            <Setter Property="BorderBrush" Value="#D5E2DA"/>
-                            <Setter Property="BorderThickness" Value="0,0,0,1"/>
-                            <Setter Property="VerticalContentAlignment" Value="Center"/>
-                            <Setter Property="HorizontalContentAlignment" Value="Center"/>
-                        </Style>
-
-                        <!-- Filas -->
-                        <Style TargetType="DataGridRow">
-                            <Setter Property="BorderThickness" Value="0"/>
-                            <Style.Triggers>
-                                <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="Background" Value="#EAF4EE"/>
-                                </Trigger>
-                                <Trigger Property="IsSelected" Value="True">
-                                    <Setter Property="Background" Value="#DCECE3"/>
-                                    <Setter Property="Foreground" Value="#17483D"/>
-                                </Trigger>
-                            </Style.Triggers>
-                        </Style>
-
-                        <!-- Celdas -->
-                        <Style TargetType="DataGridCell">
-                            <Setter Property="Padding" Value="14,8"/>
-                            <Setter Property="BorderThickness" Value="0"/>
-                            <Setter Property="VerticalContentAlignment" Value="Center"/>
-                            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
-                        </Style>
-
-                        <!-- Texto centrado en las columnas -->
-                        <Style x:Key="TextoCeldaCentrado" TargetType="TextBlock">
-                            <Setter Property="TextAlignment" Value="Center"/>
-                            <Setter Property="VerticalAlignment" Value="Center"/>
-                            <Setter Property="Margin" Value="8,0"/>
-                        </Style>
-
-
-                    </DataGrid.Resources>
+                <DataGrid x:Name="UsuariosDataGrid" Style="{StaticResource TablaAdmin}">
 
                     <DataGrid.Columns>
 
 
-                        <DataGridTextColumn Header="ID" Binding="{Binding Id}" ElementStyle="{StaticResource TextoCeldaCentrado}" Width="65"/>
+                        <DataGridTextColumn Header="ID" Binding="{Binding Id}" ElementStyle="{StaticResource TextoCeldaAdmin}" Width="65"/>
 
-                        <DataGridTextColumn Header="Usuario" Binding="{Binding Username}" ElementStyle="{StaticResource TextoCeldaCentrado}" Width="*"/>
+                        <DataGridTextColumn Header="Usuario" Binding="{Binding Username}" ElementStyle="{StaticResource TextoCeldaAdmin}" Width="*"/>
 
-                        <DataGridTextColumn Header="Nombre" Binding="{Binding Name}" ElementStyle="{StaticResource TextoCeldaCentrado}" Width="*"/>
+                        <DataGridTextColumn Header="Nombre" Binding="{Binding Name}" ElementStyle="{StaticResource TextoCeldaAdmin}" Width="*"/>
 
-                        <DataGridTextColumn Header="Apellidos" Binding="{Binding Surname}" ElementStyle="{StaticResource TextoCeldaCentrado}" Width="*"/>
+                        <DataGridTextColumn Header="Apellidos" Binding="{Binding Surname}" ElementStyle="{StaticResource TextoCeldaAdmin}" Width="*"/>
 
-                        <DataGridTextColumn Header="Correo electrónico" Binding="{Binding Email}" ElementStyle="{StaticResource TextoCeldaCentrado}" Width="2*"/>
+                        <DataGridTextColumn Header="Correo electrónico" Binding="{Binding Email}" ElementStyle="{StaticResource TextoCeldaAdmin}" Width="2*"/>
 
 
                         <!-- Estado con colores -->
@@ -567,6 +481,7 @@
                     </ScrollViewer>
                 </Border>
             </Grid>
-        </Grid>
+        <Button Content="Cerrar" Style="{StaticResource BotonCerrarAdmin}" Click="VolverInicio_Click" Grid.Row="2" Margin="0,18,0,0"/></Grid>
+    <ContentControl x:Name="ContenidoSeccion" Grid.Row="1" Visibility="Collapsed" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"/>
     <componentes:CabeceraComun Grid.Row="0" Rol="Administrador" VerticalAlignment="Top"/></Grid>
 </Window>
