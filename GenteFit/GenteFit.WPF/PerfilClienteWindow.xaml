@@ -10,7 +10,8 @@
             <Setter Property="Padding" Value="10,8"/>
             <Setter Property="IsReadOnly" Value="True"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
-            <Setter Property="Margin" Value="0,0,0,15"/>
+            <Setter Property="Height" Value="40"/>
+            <Setter Property="Margin" Value="0"/>
         </Style>
 
         <Style x:Key="EtiquetaPerfil" TargetType="TextBlock">
@@ -52,51 +53,66 @@
                                 <ColumnDefinition Width="24"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-
-                            <StackPanel Grid.Column="0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,0,0,16">
                                 <TextBlock Text="Nombre" Style="{StaticResource EtiquetaPerfil}"/>
                                 <TextBox x:Name="TxtNombre" Style="{StaticResource CampoPerfil}"/>
-
+                            </StackPanel>
+                            <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,0,0,16">
                                 <TextBlock Text="Apellidos" Style="{StaticResource EtiquetaPerfil}"/>
                                 <TextBox x:Name="TxtApellidos" Style="{StaticResource CampoPerfil}"/>
-
+                            </StackPanel>
+                            <StackPanel Grid.Row="2" Grid.Column="0" Margin="0,0,0,16">
                                 <TextBlock Text="Nombre de usuario" Style="{StaticResource EtiquetaPerfil}"/>
                                 <TextBox x:Name="TxtUsuario" Style="{StaticResource CampoPerfil}"/>
-
+                            </StackPanel>
+                            <StackPanel Grid.Row="3" Grid.Column="0" Margin="0,0,0,16">
                                 <TextBlock Text="Email" Style="{StaticResource EtiquetaPerfil}"/>
                                 <TextBox x:Name="TxtEmail" Style="{StaticResource CampoPerfil}"/>
-
+                            </StackPanel>
+                            <StackPanel Grid.Row="4" Grid.Column="0" Margin="0,0,0,16">
                                 <TextBlock Text="Teléfono" Style="{StaticResource EtiquetaPerfil}"/>
                                 <TextBox x:Name="TxtTelefono" Style="{StaticResource CampoPerfil}"/>
-
+                            </StackPanel>
+                            <StackPanel Grid.Row="5" Grid.Column="0" Margin="0,0,0,16">
                                 <TextBlock Text="DNI" Style="{StaticResource EtiquetaPerfil}"/>
                                 <TextBox x:Name="TxtDNI" Style="{StaticResource CampoPerfil}"/>
                             </StackPanel>
-
-                            <StackPanel Grid.Column="2">
+                            <StackPanel Grid.Row="0" Grid.Column="2" Margin="0,0,0,16">
                                 <TextBlock Text="Fecha de nacimiento" Style="{StaticResource EtiquetaPerfil}"/>
-                                <DatePicker x:Name="DpFechaNacimiento" FontFamily="Poppins" FontSize="14" Background="#EDF3F0" Foreground="#252A27" BorderBrush="#C8D1D9" IsEnabled="False" Margin="0,0,0,15"/>
-
+                                <DatePicker x:Name="DpFechaNacimiento" Height="40" FontFamily="Poppins" FontSize="14" Background="#EDF3F0" Foreground="#252A27" BorderBrush="#C8D1D9" IsEnabled="False"/>
+                            </StackPanel>
+                            <StackPanel Grid.Row="1" Grid.Column="2" Margin="0,0,0,16">
                                 <TextBlock Text="Dirección" Style="{StaticResource EtiquetaPerfil}"/>
                                 <TextBox x:Name="TxtDireccion" Style="{StaticResource CampoPerfil}"/>
-
+                            </StackPanel>
+                            <StackPanel Grid.Row="2" Grid.Column="2" Margin="0,0,0,16">
                                 <TextBlock Text="Ciudad" Style="{StaticResource EtiquetaPerfil}"/>
                                 <TextBox x:Name="TxtCiudad" Style="{StaticResource CampoPerfil}"/>
-
+                            </StackPanel>
+                            <StackPanel Grid.Row="3" Grid.Column="2" Margin="0,0,0,16">
                                 <TextBlock Text="Código postal" Style="{StaticResource EtiquetaPerfil}"/>
                                 <TextBox x:Name="TxtCodigoPostal" Style="{StaticResource CampoPerfil}"/>
-
+                            </StackPanel>
+                            <StackPanel Grid.Row="4" Grid.Column="2" Margin="0,0,0,16">
                                 <TextBlock Text="IBAN" Style="{StaticResource EtiquetaPerfil}"/>
                                 <TextBox x:Name="TxtIban" Style="{StaticResource CampoPerfil}"/>
                             </StackPanel>
                         </Grid>
 
-                        <WrapPanel HorizontalAlignment="Right" ItemHeight="40" Margin="0,8,0,0">
-                            <Button x:Name="BtnEditarPerfil" Content="Editar perfil" Width="140" Background="#17483D" Foreground="White" Style="{StaticResource BotonPerfil}" Click="EditarPerfil_Click" Margin="0,0,10,8"/>
+                        <WrapPanel HorizontalAlignment="Right" Margin="0,12,0,0">
+                            <Button x:Name="BtnEditarPerfil" Height="48" Content="Editar perfil" Width="140" Background="#17483D" Foreground="White" Style="{StaticResource BotonPerfil}" Click="EditarPerfil_Click" Margin="0,0,10,8"/>
 
-                            <Button x:Name="BtnGuardarPerfil" Content="Guardar cambios" Width="155" Background="#17483D" Foreground="White" Style="{StaticResource BotonPerfil}" Visibility="Collapsed" Click="GuardarPerfil_Click" Margin="0,0,10,8"/>
+                            <Button x:Name="BtnGuardarPerfil" Height="48" Content="Guardar cambios" Width="155" Background="#17483D" Foreground="White" Style="{StaticResource BotonPerfil}" Visibility="Collapsed" Click="GuardarPerfil_Click" Margin="0,0,10,8"/>
 
-                            <Button x:Name="BtnCancelarEdicion" Content="Cancelar" Width="110" Background="#C8D1D9" Foreground="#252A27" Style="{StaticResource BotonPerfil}" Visibility="Collapsed" Click="CancelarEdicion_Click" Margin="0,0,0,8"/>
+                            <Button x:Name="BtnCancelarEdicion" Height="48" Content="Cancelar" Width="110" Background="#C8D1D9" Foreground="#252A27" Style="{StaticResource BotonPerfil}" Visibility="Collapsed" Click="CancelarEdicion_Click" Margin="0,0,0,8"/>
                         </WrapPanel>
                     </StackPanel>
                 </Border>
@@ -107,7 +123,7 @@
                 </Border>
 
                 <Grid Margin="0,0,0,20"><Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions><Button Content="Cerrar sesión" Width="190" Height="48" HorizontalAlignment="Left" Background="#A52020" Foreground="White" Style="{StaticResource BotonPerfil}" Margin="0" Click="CerrarSesion_Click" Grid.Column="0"/>
-            <Button Content="Volver" Width="160" Height="48" Grid.Column="1" HorizontalAlignment="Right" Background="#17483D" Foreground="White" Style="{StaticResource BotonPerfil}" Click="MenuButton_Click"/></Grid></StackPanel>
+            <Button Content="Cerrar" Width="160" Height="48" Grid.Column="1" HorizontalAlignment="Right" Background="#17483D" Foreground="White" Style="{StaticResource BotonPerfil}" Click="MenuButton_Click"/></Grid></StackPanel>
         </ScrollViewer>
     </Grid>
 </Window>

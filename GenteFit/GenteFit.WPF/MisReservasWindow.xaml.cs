@@ -406,6 +406,11 @@ namespace GenteFit.WPF
             _context.Dispose();
             base.OnClosed(e);
         }
+        private void Volver_Click(object sender, RoutedEventArgs e)
+        {
+            Cabecera_InicioSolicitado(sender, EventArgs.Empty);
+        }
+
         private void Cabecera_InicioSolicitado(object sender, EventArgs e)
         {
             var panel = new PanelClienteWindow(_usuarioAutenticado);

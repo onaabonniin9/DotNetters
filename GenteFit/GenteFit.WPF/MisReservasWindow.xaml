@@ -5,6 +5,7 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
         <local:CabeceraClienteControl Grid.Row="0" Margin="0,0,0,12" InicioSolicitado="Cabecera_InicioSolicitado" CerrarSesionSolicitado="Cabecera_CerrarSesionSolicitado"/><TextBlock Grid.Row="1" Text="Mis reservas" FontSize="28" FontWeight="Bold" Foreground="#17483D" HorizontalAlignment="Center" Margin="0,0,0,15"/>
@@ -132,5 +133,18 @@
                 </StackPanel>
             </ScrollViewer>
         </Border>
+        <Button Grid.Row="3" Content="Cerrar" Width="160" Height="48"
+                HorizontalAlignment="Right" Margin="0,14,0,0"
+                FontFamily="Poppins" FontSize="15" FontWeight="SemiBold"
+                Foreground="White" Background="#17483D" BorderThickness="0"
+                Cursor="Hand" Click="Volver_Click">
+            <Button.Template>
+                <ControlTemplate TargetType="Button">
+                    <Border Background="{TemplateBinding Background}" CornerRadius="10">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                </ControlTemplate>
+            </Button.Template>
+        </Button>
     </Grid>
 </Window>
