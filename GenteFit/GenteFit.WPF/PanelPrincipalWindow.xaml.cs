@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -384,6 +384,8 @@ namespace GenteFit.WPF
             login.Show();
             Close();
         }
+
+        public void MostrarInicioDesdeCabecera() => MostrarInicio();
 
         private void MostrarInicio()
         {
