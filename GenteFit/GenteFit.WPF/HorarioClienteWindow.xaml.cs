@@ -219,8 +219,7 @@ namespace GenteFit.WPF
             var panelCliente =
                 new PanelClienteWindow(_usuarioAutenticado);
 
-            panelCliente.Show();
-            Close();
+            NavegacionCliente.AbrirDesde(this, panelCliente);
         }
 
         private void MenuMisReservas_Click(
@@ -230,8 +229,7 @@ namespace GenteFit.WPF
             var misReservas =
                 new MisReservasWindow(_usuarioAutenticado);
 
-            misReservas.Show();
-            Close();
+            NavegacionCliente.AbrirDesde(this, misReservas);
         }
 
         private void BtnVerDetalles_Click(
@@ -249,8 +247,7 @@ namespace GenteFit.WPF
                     sesionId,
                     _usuarioAutenticado);
 
-            detalleWindow.Show();
-            Close();
+            NavegacionCliente.AbrirDesde(this, detalleWindow);
         }
 
         private async void BtnAccionSesion_Click(
@@ -360,8 +357,7 @@ namespace GenteFit.WPF
         private void Cabecera_InicioSolicitado(object sender, EventArgs e)
         {
             var panel = new PanelClienteWindow(_usuarioAutenticado);
-            panel.Show();
-            Close();
+            NavegacionCliente.AbrirDesde(this, panel);
         }
 
         private void Cabecera_CerrarSesionSolicitado(object sender, EventArgs e)

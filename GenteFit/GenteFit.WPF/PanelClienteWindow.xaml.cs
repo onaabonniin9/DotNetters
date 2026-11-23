@@ -78,22 +78,19 @@ namespace GenteFit.WPF
         private void BtnVerHorario_Click(object sender, RoutedEventArgs e)
         {
             var horarioWindow = new HorarioClienteWindow(_usuarioAutenticado);
-            horarioWindow.Show();
-            Close();
+            NavegacionCliente.AbrirDesde(this, horarioWindow);
         }
 
         private void BtnMisReservas_Click(object sender, RoutedEventArgs e)
         {
             var misReservasWindow = new MisReservasWindow(_usuarioAutenticado);
-            misReservasWindow.Show();
-            Close();
+            NavegacionCliente.AbrirDesde(this, misReservasWindow);
         }
 
         private void BtnMiPerfil_Click(object sender, RoutedEventArgs e)
         {
             var perfilClienteWindow = new PerfilClienteWindow(_usuarioAutenticado);
-            perfilClienteWindow.Show();
-            Close();
+            NavegacionCliente.AbrirDesde(this, perfilClienteWindow);
         }
 
         protected override void OnClosed(EventArgs e)

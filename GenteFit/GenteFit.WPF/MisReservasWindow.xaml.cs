@@ -68,6 +68,7 @@ namespace GenteFit.WPF
                         _usuarioAutenticado);
 
                 var reservasPresentacion = reservasMias
+                    .Where(r => r.Estado == EstadoReserva.CONFIRMADA)
                     .Select(r => new
                     {
                         ReservaId = r.Id,
@@ -254,8 +255,7 @@ namespace GenteFit.WPF
             var panel =
                 new PanelClienteWindow(_usuarioAutenticado);
 
-            panel.Show();
-            Close();
+            NavegacionCliente.AbrirDesde(this, panel);
         }
 
         private void VerHorario_Click(
@@ -265,8 +265,7 @@ namespace GenteFit.WPF
             var horario =
                 new HorarioClienteWindow(_usuarioAutenticado);
 
-            horario.Show();
-            Close();
+            NavegacionCliente.AbrirDesde(this, horario);
         }
 
         private async void BtnCancelarReserva_Click(
@@ -414,8 +413,7 @@ namespace GenteFit.WPF
         private void Cabecera_InicioSolicitado(object sender, EventArgs e)
         {
             var panel = new PanelClienteWindow(_usuarioAutenticado);
-            panel.Show();
-            Close();
+            NavegacionCliente.AbrirDesde(this, panel);
         }
 
         private void Cabecera_CerrarSesionSolicitado(object sender, EventArgs e)
