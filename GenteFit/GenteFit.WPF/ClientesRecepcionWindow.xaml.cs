@@ -72,6 +72,19 @@ namespace GenteFit.WPF
             await CargarAsync(Buscador.Text);
         }
 
+        private void BtnVer_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is not Button boton || boton.Tag is not int clienteId)
+            return;
+
+            var ventana = new DetalleClienteRecepcionWindow(_usuarioAutenticado, clienteId)
+            {
+                Owner = this
+            };
+
+            ventana.ShowDialog();
+        }
+
         private sealed record ClienteFila(int Id, string NombreCompleto, bool Activo)
         {
             public Brush ColorEstado => Activo ? ColorActivo : ColorInactivo;

@@ -69,7 +69,35 @@ public class ClienteService
         .ToListAsync();
     }
 
-   
+   //Pantalla 12, datos del cliente
+
+   public async Task<DetalleClienteRecepcion?> ConsultarDetalleParaRecepcionAsync(
+    UsuarioAutenticado usuarioActual, int clienteId)
+    {
+        await AutorizacionService.ExigirPersonalRecepcionActivoAsync(_context, usuarioActual);
+
+        Cliente? cliente = await _context.Clientes
+        .AsNoTracking()
+        .FirstOrDefaultAsync(c=> c.Id == clienteId);
+
+        if (cliente is null)
+            return null;
+
+            string? plan = await _context.Suscripciones
+            .AsNoTracking()
+            .Where(s => s.Cliente.Id == clienteId && s.Status == EstadoSuscripcion.ACTIVA)
+            .Select(s => s.PlanMensual.Name)
+            .FirstOrDefaultAsync();
+
+            List<Pago>pagos = await _context.Pagos
+            .AsNoTracking()
+            .Where(p => p.Suscripcion.Cliente.Id == clienteId)
+            .OrderByDescending(p => p.PaymentDate)
+            .ToListAsync();
+
+            return new DetalleClienteRecepcion(cliente, plan, pagos);
+        
+    }
 
     public async Task<Cliente?> ConsultarPorIdAsync(int id)
     {

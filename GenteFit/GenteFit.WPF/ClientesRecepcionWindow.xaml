@@ -59,8 +59,9 @@
                                     <Button Grid.Column="2" Content="Ver"
                                             Height="28" Background="#707070"
                                             Foreground="White" BorderThickness="0"
-                                            IsEnabled="False"
-                                            ToolTip="Se activará con la pantalla de detalle de cliente"/>
+                                            Tag="{Binding Id}"
+                                            Click="BtnVer_Click"
+                                            />
                                 </Grid>
                             </Border>
                         </DataTemplate>
