@@ -441,4 +441,39 @@ public class SesionService
 
         return true;
     }
+    public async Task<bool> ReprogramarAsync(
+        int id,
+        UsuarioAutenticado usuarioActual)
+    {
+        await AutorizacionService.ExigirAdministradorActivoAsync(
+            _context,
+            usuarioActual);
+
+        var sesion = await _context.Sesiones
+            .Include(s => s.Monitor)
+            .Include(s => s.Sala)
+            .Include(s => s.Actividad)
+            .FirstOrDefaultAsync(s => s.Id == id);
+
+        if (sesion is null || sesion.Status != EstadoSesion.CANCELADA)
+            return false;
+
+        if (!EsFutura(sesion))
+            throw new InvalidOperationException(
+                "No se puede reprogramar una sesión con fecha u hora pasada.");
+
+        if (!sesion.Monitor.Active || !sesion.Sala.Active || !sesion.Actividad.Active)
+            throw new InvalidOperationException(
+                "No se puede reprogramar la sesión porque su monitor, sala o actividad están inactivos.");
+
+        if (sesion.MaxParticipants > sesion.Sala.Capacity)
+            throw new InvalidOperationException(
+                "La capacidad de la sesión supera la capacidad actual de la sala.");
+
+        // Las reservas canceladas y las entradas retiradas conservan su estado histórico.
+        sesion.Status = EstadoSesion.PROGRAMADA;
+        await _context.SaveChangesAsync();
+        return true;
+    }
+
 }

@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 using GenteFit.Data;
 using GenteFit.Models;
 using GenteFit.Services;
@@ -248,6 +249,26 @@ public partial class ActividadesSesionesAdminWindow : UserControl
         }
     }
 
+    private void SesionesDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        ActualizarBotonEstadoSesion();
+    }
+
+    private void ActualizarBotonEstadoSesion()
+    {
+        if (CambiarEstadoSesionButton is null)
+            return;
+
+        var seleccionada = SesionesDataGrid?.SelectedItem as SesionResumen;
+        bool programada = seleccionada?.Estado == EstadoSesion.PROGRAMADA.ToString();
+        bool cancelada = seleccionada?.Estado == EstadoSesion.CANCELADA.ToString();
+
+        CambiarEstadoSesionButton.IsEnabled = programada || cancelada;
+        CambiarEstadoSesionButton.Content = cancelada ? "Reprogramar sesión" : "Cancelar sesión";
+        CambiarEstadoSesionButton.Background = new SolidColorBrush(
+            cancelada ? Color.FromRgb(0x17, 0x48, 0x3D) : Color.FromRgb(0xA3, 0x20, 0x20));
+    }
+
     private async void CancelarSesion_Click(object sender, RoutedEventArgs e)
     {
         if (SesionesDataGrid.SelectedItem is not SesionResumen seleccionada)
@@ -257,17 +278,21 @@ public partial class ActividadesSesionesAdminWindow : UserControl
             return;
         }
 
-        if (seleccionada.Estado != EstadoSesion.PROGRAMADA.ToString())
+        bool reprogramar = seleccionada.Estado == EstadoSesion.CANCELADA.ToString();
+        if (!reprogramar && seleccionada.Estado != EstadoSesion.PROGRAMADA.ToString())
         {
-            MessageBox.Show(Window.GetWindow(this)!, "Solo se pueden cancelar sesiones programadas.",
+            MessageBox.Show(Window.GetWindow(this)!, "Solo se pueden cancelar sesiones programadas o reprogramar sesiones canceladas.",
                 "GenteFit", MessageBoxButton.OK, MessageBoxImage.Information);
             return;
         }
 
-        if (MessageBox.Show(Window.GetWindow(this)!,
-                $"¿Quieres cancelar la sesión {seleccionada.Id} de «{seleccionada.Actividad}»?",
-                "Confirmar cancelación", MessageBoxButton.YesNo,
-                MessageBoxImage.Question) != MessageBoxResult.Yes)
+        string pregunta = reprogramar
+            ? $"¿Quieres volver a programar la sesión {seleccionada.Id} de «{seleccionada.Actividad}»?\n\nLas reservas y listas de espera canceladas anteriormente no se restaurarán automáticamente."
+            : $"¿Quieres cancelar la sesión {seleccionada.Id} de «{seleccionada.Actividad}»?";
+
+        if (MessageBox.Show(Window.GetWindow(this)!, pregunta,
+                reprogramar ? "Confirmar reprogramación" : "Confirmar cancelación",
+                MessageBoxButton.YesNo, MessageBoxImage.Question) != MessageBoxResult.Yes)
             return;
 
         try
@@ -275,15 +300,26 @@ public partial class ActividadesSesionesAdminWindow : UserControl
             var factory = new GenteFitContextFactory();
             await using var contexto = factory.CreateDbContext(Array.Empty<string>());
             var servicio = new SesionService(contexto);
-            bool cancelada = await servicio.CancelarAsync(seleccionada.Id, _usuarioActual);
-            if (!cancelada)
-                MessageBox.Show(Window.GetWindow(this)!, "La sesión ya no existe.",
+            bool actualizado = reprogramar
+                ? await servicio.ReprogramarAsync(seleccionada.Id, _usuarioActual)
+                : await servicio.CancelarAsync(seleccionada.Id, _usuarioActual);
+
+            if (!actualizado)
+                MessageBox.Show(Window.GetWindow(this)!,
+                    "La sesión ya no existe o ha cambiado de estado. Actualiza la lista.",
                     "GenteFit", MessageBoxButton.OK, MessageBoxImage.Warning);
+
             await CargarDatosAsync();
+        }
+        catch (InvalidOperationException ex)
+        {
+            MessageBox.Show(Window.GetWindow(this)!, ex.Message,
+                "GenteFit", MessageBoxButton.OK, MessageBoxImage.Warning);
         }
         catch (Exception)
         {
-            MessageBox.Show(Window.GetWindow(this)!, "No se ha podido cancelar la sesión.",
+            MessageBox.Show(Window.GetWindow(this)!,
+                reprogramar ? "No se ha podido reprogramar la sesión." : "No se ha podido cancelar la sesión.",
                 "GenteFit", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }

@@ -94,11 +94,11 @@
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
                         <Button Content="Nueva sesión" Width="155" Background="#17483D" Style="{StaticResource BotonRedondeado}" Click="NuevaSesion_Click"/>
                         <Button Content="Editar seleccionada" Width="170" Margin="10,0,0,0" Background="#3C7667" Style="{StaticResource BotonRedondeado}" Click="EditarSesion_Click"/>
-                        <Button Content="Cancelar sesión" Width="165" Margin="10,0,0,0" Background="#A32020" Style="{StaticResource BotonRedondeado}" Click="CancelarSesion_Click"/>
+                        <Button x:Name="CambiarEstadoSesionButton" Content="Cancelar sesión" Width="165" Margin="10,0,0,0" Background="#A32020" Style="{StaticResource BotonRedondeado}" Click="CancelarSesion_Click" IsEnabled="False"/>
                         <Button Content="Gestionar salas" Width="150" Margin="10,0,0,0" Background="#3C7667" Style="{StaticResource BotonRedondeado}" Click="GestionarSalas_Click"/>
                     </StackPanel>
                     <Border Grid.Row="1" Background="White" BorderBrush="#C8D8D0" BorderThickness="1" CornerRadius="12" ClipToBounds="True">
-                        <DataGrid x:Name="SesionesDataGrid" Style="{StaticResource TablaAdmin}">
+                        <DataGrid x:Name="SesionesDataGrid" Style="{StaticResource TablaAdmin}" SelectionChanged="SesionesDataGrid_SelectionChanged">
                         <DataGrid.Columns>
                         <DataGridTextColumn Header="ID" Binding="{Binding Id}" ElementStyle="{StaticResource TextoCeldaAdmin}" Width="60"/>
                         <DataGridTextColumn Header="Actividad" Binding="{Binding Actividad}" ElementStyle="{StaticResource TextoCeldaAdmin}" Width="2*"/>
