@@ -125,6 +125,51 @@ namespace GenteFit.WPF
             Close();
         }
 
+        private async void BtnBaja_Click(object sender, RoutedEventArgs e)
+        {
+
+            MessageBoxResult respuesta = MessageBox.Show(
+            "¿Seguro que quieres dar de baja a este cliente? No podrá iniciar sesión, pero se conservará su historial.",
+            "Baja de cliente", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+            if (respuesta != MessageBoxResult.Yes)
+            return;
+
+            try
+            {
+                var factory = new GenteFitContextFactory();
+                await using var contexto = factory.CreateDbContext(Array.Empty<string>());
+                var clienteService = new ClienteService(contexto);
+
+                bool baja = await clienteService.DarDeBajaParaRecepcionAsync(_usuarioAutenticado, _clienteId);
+
+                MessageBox.Show(
+                    baja
+                        ? "El cliente se ha dado de baja correctamente."
+                        : "El cliente no existe o ya estaba de baja.",
+                    "GenteFit",
+                    MessageBoxButton.OK, MessageBoxImage.Information);
+                
+                Close();
+            }
+            catch(UnauthorizedAccessException ex)
+            {
+                MessageBox.Show(
+                    ex.Message,
+                    "Acceso denegado",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
+            }
+            catch (Exception)
+            {
+                MessageBox.Show(
+                    "No se ha podido dar de baja al cliente. Revisa la conexión con la base de datos.",
+                    "GenteFit",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+            }
+        }
+
         private sealed record PagoFila(string Importe, string Concepto, string Estado, Brush ColorEstado, string Fecha);
     }
 }

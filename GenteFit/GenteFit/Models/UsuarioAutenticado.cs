@@ -5,7 +5,8 @@ public enum TipoCuentaUsuario // tipo de cuenta en la app, no hace falta almacen
 {
     Cliente,
     Administrador,
-    Recepcionista
+    Recepcionista,
+    Monitor
 }
 
 public sealed record UsuarioAutenticado(
@@ -23,6 +24,13 @@ public sealed record UsuarioAutenticado(
         {
             throw new UnauthorizedAccessException(
                 "No tienes permisos para realizar esta operación.");
+        }
+    }
+    public void ExigirMonitor()
+    {
+        if(Tipo != TipoCuentaUsuario.Monitor)
+        {
+            throw new UnauthorizedAccessException("No tienes permisos para realizar esta operación.");
         }
     }
 

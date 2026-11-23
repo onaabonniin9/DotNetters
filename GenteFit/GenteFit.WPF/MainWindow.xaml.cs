@@ -1,4 +1,4 @@
-
+﻿
 using System.Windows;
 using System.Windows.Controls;
 
@@ -126,6 +126,9 @@ namespace GenteFit.WPF
 
                     GenteFit.Models.TipoCuentaUsuario.Recepcionista =>
                         new PanelPrincipalWindow(usuarioAutenticado),
+                    
+                    GenteFit.Models.TipoCuentaUsuario.Monitor =>
+                        new PanelMonitorWindow(usuarioAutenticado),
 
                     GenteFit.Models.TipoCuentaUsuario.Cliente =>
                         new PanelClienteWindow(usuarioAutenticado),

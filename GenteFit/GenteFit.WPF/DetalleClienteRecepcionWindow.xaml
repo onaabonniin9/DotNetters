@@ -93,8 +93,7 @@
                             ToolTip="Se activará con la pantalla de edición"/>
                     <Button Content="Baja cliente" Width="150" Height="34"
                             Margin="0,0,10,0" Background="White" Foreground="#8B0000"
-                            IsEnabled="False"
-                            ToolTip="Se activará en un paso posterior"/>
+                            Click="BtnBaja_Click"/>
                     <Button Content="Volver" Width="110" Height="34"
                             Click="BtnVolver_Click"/>
                 </StackPanel>

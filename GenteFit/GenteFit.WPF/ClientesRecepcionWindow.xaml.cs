@@ -8,6 +8,7 @@ using System.Windows.Media;
 using GenteFit.Data;
 using GenteFit.Models;
 using GenteFit.Services;
+using GenteFit.WPF.Components;
 using GenteFit.WPF.Services;
 
 namespace GenteFit.WPF
@@ -72,7 +73,7 @@ namespace GenteFit.WPF
             await CargarAsync(Buscador.Text);
         }
 
-        private void BtnVer_Click(object sender, RoutedEventArgs e)
+        private async void BtnVer_Click(object sender, RoutedEventArgs e)
         {
             if (sender is not Button boton || boton.Tag is not int clienteId)
             return;
@@ -83,6 +84,8 @@ namespace GenteFit.WPF
             };
 
             ventana.ShowDialog();
+
+            await CargarAsync(Buscador.Text);
         }
 
         private sealed record ClienteFila(int Id, string NombreCompleto, bool Activo)

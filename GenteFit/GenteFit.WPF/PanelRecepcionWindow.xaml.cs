@@ -31,5 +31,10 @@ namespace GenteFit.WPF
             };
             ventana.ShowDialog();
         }
+        private void BtnHorario_Click(object sender, RoutedEventArgs e)
+        {
+            var ventana = new HorarioPersonalWindow(_usuarioAutenticado) { Owner = this };
+            ventana.ShowDialog();
+        }
     }
 }

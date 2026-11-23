@@ -99,6 +99,23 @@ public class ClienteService
         
     }
 
+    public async Task<bool> DarDeBajaParaRecepcionAsync(UsuarioAutenticado usuarioActual, int clienteId)
+    {
+        await AutorizacionService.ExigirPersonalRecepcionActivoAsync(_context, usuarioActual);
+        
+        Cliente? cliente = await _context.Clientes
+        .FirstOrDefaultAsync(c => c.Id == clienteId);
+
+        if (cliente is null || !cliente.Active)
+        return false;
+
+        cliente.Active = false;
+
+        await _context.SaveChangesAsync();
+
+        return true;
+    }
+
     public async Task<Cliente?> ConsultarPorIdAsync(int id)
     {
         return await _context.Set<Cliente>()

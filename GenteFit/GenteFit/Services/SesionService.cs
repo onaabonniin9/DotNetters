@@ -64,6 +64,18 @@ public class SesionService
                     _context,
                     usuarioActual);
                 break;
+                
+            case TipoCuentaUsuario.Recepcionista:
+                await AutorizacionService.ExigirPersonalRecepcionActivoAsync(
+                    _context,
+                    usuarioActual);
+                break;
+            
+            case TipoCuentaUsuario.Monitor:
+                await AutorizacionService.ExigirMonitorActivoAsync(
+                    _context,
+                    usuarioActual);
+                break;
 
             default:
                 throw new UnauthorizedAccessException(
@@ -160,6 +172,9 @@ public class SesionService
             .Include(s => s.Actividad)
             .AsQueryable();
 
+        if (usuarioActual.Tipo == TipoCuentaUsuario.Monitor)
+            consulta = consulta.Where(s => s.Monitor.Id == usuarioActual.UsuarioId);
+
         if (usuarioActual.Tipo == TipoCuentaUsuario.Cliente)
         {
             DateOnly hoy = DateOnly.FromDateTime(DateTime.Now);
@@ -189,6 +204,9 @@ public class SesionService
             .Include(s => s.Sala)
             .Include(s => s.Actividad)
             .Where(s => s.Id == id);
+
+        if (usuarioActual.Tipo == TipoCuentaUsuario.Monitor)
+            consulta = consulta.Where(s => s.Monitor.Id == usuarioActual.UsuarioId);
 
         if (usuarioActual.Tipo == TipoCuentaUsuario.Cliente)
         {
@@ -221,6 +239,9 @@ public class SesionService
         var consultaSesiones = _context.Sesiones
             .AsNoTracking()
             .Where(s => idsSolicitados.Contains(s.Id));
+
+        if (usuarioActual.Tipo == TipoCuentaUsuario.Monitor)
+            consultaSesiones = consultaSesiones.Where(s => s.Monitor.Id == usuarioActual.UsuarioId);
 
         if (usuarioActual.Tipo == TipoCuentaUsuario.Cliente)
         {
@@ -440,5 +461,44 @@ public class SesionService
         await transaction.CommitAsync();
 
         return true;
+
     }
+    
+    public async Task<List<Sesion>> ConsultarPorRangoAsync(
+        DateOnly desde, DateOnly hasta, UsuarioAutenticado usuarioActual)
+    {
+        await ExigirPermisoConsultaAsync(usuarioActual);
+
+        var consulta = _context.Sesiones
+            .AsNoTracking()
+            .Include(s => s.Monitor)
+            .Include(s => s.Sala)
+            .Include(s => s.Actividad)
+            .Where(s => s.Date >= desde && s.Date <= hasta);
+
+            if(usuarioActual.Tipo == TipoCuentaUsuario.Monitor)
+                consulta = consulta.Where(s => s.Monitor.Id == usuarioActual.UsuarioId);
+
+            return await consulta
+            .OrderBy(s => s.Date)
+            .ThenBy(s => s.HourStart)
+            .ToListAsync();
+    }
+
+    public async Task<List<Reserva>> ConsultarReservasConfirmadasAsync(int sesionId, UsuarioAutenticado usuarioActual)
+    {
+        await ExigirPermisoConsultaAsync(usuarioActual);
+
+        var consulta = _context.Reservas
+            .AsNoTracking()
+            .Include(r => r.Cliente)
+            .Where(r => r.Sesion.Id == sesionId &&
+                        r.Status == EstadoReserva.CONFIRMADA);
+
+        if(usuarioActual.Tipo == TipoCuentaUsuario.Monitor)
+            consulta = consulta.Where(r => r.Sesion.Monitor.Id == usuarioActual.UsuarioId);
+
+        return await consulta.OrderBy(r => r.CreatedAt).ToListAsync();
+    }
+
 }

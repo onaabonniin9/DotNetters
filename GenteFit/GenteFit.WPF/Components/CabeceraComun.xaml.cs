@@ -111,6 +111,15 @@ public partial class CabeceraComun : UserControl
             panel.Show();
             ventana.Close();
         }
+        else if (Rol == "Recepción" || Rol == "Monitor")
+        {
+            while (ventana.Owner is not null)
+            {
+                Window propietaria = ventana.Owner;
+                ventana.Close();
+                ventana = propietaria;
+            }
+        }
     }
 
     private void CerrarSesion_Click(object sender, RoutedEventArgs e)

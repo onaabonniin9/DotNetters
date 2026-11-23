@@ -54,6 +54,21 @@ public static class AutorizacionService
         }        
 
     }
+
+    public static async Task ExigirMonitorActivoAsync(GenteFitContext contexto, UsuarioAutenticado usuarioActual)
+    {
+        ArgumentNullException.ThrowIfNull(usuarioActual);
+        usuarioActual.ExigirMonitor();
+
+        bool activo = await contexto.Monitores
+        .AsNoTracking()
+        .AnyAsync(m => m.Id == usuarioActual.UsuarioId && m.Active);
+
+        if (!activo)
+        {
+            throw new UnauthorizedAccessException("La cuenta no está activa");
+        }
+    }
     
 
     public static async Task<int> ExigirClienteActivoAsync(

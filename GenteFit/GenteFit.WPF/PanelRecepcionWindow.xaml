@@ -51,10 +51,10 @@
                     Background="#17483D" Foreground="White"
                     Click="BtnClientes_Click"/>
 
-            <Button Content="Ver horario (próximamente)"
+            <Button Content="Ver horario"
                     Style="{StaticResource BotonMenu}"
                     Background="#C8D1D9" Foreground="#252A27"
-                    IsEnabled="False"/>
+                    Click="BtnHorario_Click"/>
         </StackPanel>
     </Grid>
 </Window>
