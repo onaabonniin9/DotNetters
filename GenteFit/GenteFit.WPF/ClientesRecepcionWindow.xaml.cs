@@ -15,7 +15,7 @@ namespace GenteFit.WPF
     public partial class ClientesRecepcionWindow : Window
     {
         private static readonly Brush ColorActivo = new SolidColorBrush(Color.FromRgb(0x1B, 0x8A, 0x4B));
-        private static readonly Brush ColorInactivo = new SolidColorBrush(ColorActivo.FromRgb(0x8B, 0x00, 0x00));
+        private static readonly Brush ColorInactivo = new SolidColorBrush(Color.FromRgb(0x8B, 0x00, 0x00));
         private readonly UsuarioAutenticado _usuarioAutenticado;
         private int _busquedaActual;
 
@@ -50,7 +50,7 @@ namespace GenteFit.WPF
                 if (numeroBusqueda != _busquedaActual)
                     return;
                 
-                ListaClients.ItemSource = clientes.Select(c => new ClienteFila(c.Id, $"{c.Name} {c.Surname}"
+                ListaClientes.ItemsSource = clientes.Select(c => new ClienteFila(c.Id, $"{c.Name} {c.Surname}"
                 .Trim(),c.Active)).ToList();
 
                 TxtResumen.Text = clientes.Count == 0 
@@ -74,7 +74,7 @@ namespace GenteFit.WPF
 
         private sealed record ClienteFila(int Id, string NombreCompleto, bool Activo)
         {
-            public string Estado => Activo ? ColorActivo : ColorInactivo;
+            public Brush ColorEstado => Activo ? ColorActivo : ColorInactivo;
         }
 
     }

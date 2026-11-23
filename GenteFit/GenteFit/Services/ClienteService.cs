@@ -43,7 +43,7 @@ public class ClienteService
             .ToListAsync();
     }
 
-    public async Task<List<Cliente>> ConsultarParaRecepcionistaAsync(
+    public async Task<List<Cliente>> ConsultarParaRecepcionAsync(
         UsuarioAutenticado usuarioActual,
         string? texto = null)
     {
