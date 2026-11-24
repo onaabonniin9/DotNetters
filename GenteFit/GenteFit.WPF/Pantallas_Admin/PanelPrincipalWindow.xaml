@@ -302,6 +302,33 @@
                     </Grid>
                 </Button>
 
+                <!-- CLIENTES XML -->
+                <Button Style="{StaticResource Tarjeta}" Click="MenuClientesXml_Click">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="105"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="55"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Text="&lt;/&gt;"
+                                   FontFamily="Consolas"
+                                   FontSize="32"
+                                   FontWeight="Bold"
+                                   Foreground="#17483D"
+                                   VerticalAlignment="Center"/>
+
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <TextBlock Text="Clientes XML"
+                                       Style="{StaticResource TituloTarjeta}"/>
+                            <TextBlock Text="Importar y exportar clientes en formato XML."
+                                       Style="{StaticResource DescripcionTarjeta}"/>
+                        </StackPanel>
+
+                        <TextBlock Grid.Column="2" Style="{StaticResource Flecha}"/>
+                    </Grid>
+                </Button>
+
                 <!-- ODOO -->
                 <Button Style="{StaticResource Tarjeta}" Tag="Integración con Odoo" Click="AbrirSeccion_Click">
 
@@ -360,7 +387,8 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/></Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
 
             <!-- Cabecera -->
             <StackPanel Grid.Row="0" Margin="0,25,0,28">
@@ -371,7 +399,8 @@
 
                 <!-- Botón de regreso -->
                 <!-- Buscador de usuarios -->
-                <componentes:BuscadorComun x:Name="BuscarUsuarioTextBox" Indicacion="Buscar usuario..." TextChanged="BuscarUsuarioTextBox_TextChanged" Margin="0,22,0,0"/></StackPanel>
+                <componentes:BuscadorComun x:Name="BuscarUsuarioTextBox" Indicacion="Buscar usuario..." TextChanged="BuscarUsuarioTextBox_TextChanged" Margin="0,22,0,0"/>
+            </StackPanel>
 
             <!-- Contenedor de tabla -->
             <Border Grid.Row="1" Background="White" BorderBrush="#C8D8D0" BorderThickness="1" CornerRadius="12" ClipToBounds="True">
@@ -481,7 +510,9 @@
                     </ScrollViewer>
                 </Border>
             </Grid>
-        <Button Content="Cerrar" Style="{StaticResource BotonCerrarAdmin}" Click="VolverInicio_Click" Grid.Row="2" Margin="0,18,0,0"/></Grid>
-    <ContentControl x:Name="ContenidoSeccion" Grid.Row="1" Visibility="Collapsed" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"/>
-    <componentes:CabeceraComun Grid.Row="0" Rol="Administrador" VerticalAlignment="Top"/></Grid>
+            <Button Content="Cerrar" Style="{StaticResource BotonCerrarAdmin}" Click="VolverInicio_Click" Grid.Row="2" Margin="0,18,0,0"/>
+        </Grid>
+        <ContentControl x:Name="ContenidoSeccion" Grid.Row="1" Visibility="Collapsed" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"/>
+        <componentes:CabeceraComun Grid.Row="0" Rol="Administrador" VerticalAlignment="Top"/>
+    </Grid>
 </Window>
