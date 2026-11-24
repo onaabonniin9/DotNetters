@@ -26,7 +26,7 @@ namespace GenteFit.WPF
         private int Dias => _esMonitor ? 5 : 1;
         private int Paso => _esMonitor ? 7 : 1;
 
-        public HorarioPersonalWindow(UsuarioAutenticado usuarioAutenticado)
+        public HorarioPersonalWindow(UsuarioAutenticado usuarioAutenticado, DateOnly? inicio = null)
         {
             ArgumentNullException.ThrowIfNull(usuarioAutenticado);
 
@@ -43,7 +43,7 @@ namespace GenteFit.WPF
 
             Cabecera.Rol = _esMonitor ? "Monitor" : "Recepción";
             TxtTitulo.Text = _esMonitor ? "Mi horario semanal" : "Horario del día";
-            _inicio = InicioPorDefecto();
+            _inicio = inicio ?? InicioPorDefecto();
 
             Loaded += async (_, _) => await CargarAsync();
         }
@@ -97,7 +97,7 @@ namespace GenteFit.WPF
             catch (UnauthorizedAccessException ex)
             {
                 MessageBox.Show(ex.Message, "Acceso denegado", MessageBoxButton.OK, MessageBoxImage.Warning);
-                Close();
+                NavegacionCliente.CerrarSesion(this);
             }
             catch (Exception)
             {
@@ -156,8 +156,16 @@ namespace GenteFit.WPF
         private void BtnVer_Click(object sender, RoutedEventArgs e)
         {
             int id = (int)((Button)sender).Tag;
-            var detalle = new DetalleSesionPersonalWindow(_usuarioAutenticado, id) { Owner = this };
-            detalle.ShowDialog();
+            var detalle = new DetalleSesionPersonalWindow(_usuarioAutenticado, id, _inicio);
+            NavegacionCliente.AbrirDesde(this, detalle);
+        }
+
+        private void BtnCerrar_Click(object sender, RoutedEventArgs e) => VolverAlPanel();
+
+        private void VolverAlPanel()
+        {
+            Window panel = _esMonitor ? new PanelMonitorWindow(_usuarioAutenticado) : new PanelRecepcionWindow(_usuarioAutenticado);
+            NavegacionCliente.AbrirDesde(this, panel);
         }
 
         private sealed record SesionFila(int Id, string Hora, string Actividad, string Lugar,

@@ -452,10 +452,7 @@ namespace GenteFit.WPF
 
         private void CerrarSesion()
         {
-            var mainWindow = new MainWindow();
-
-            mainWindow.Show();
-            Close();
+            NavegacionCliente.CerrarSesion(this);
         }
 
         private void Cabecera_InicioSolicitado(object? sender, EventArgs e)

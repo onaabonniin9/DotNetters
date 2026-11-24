@@ -25,16 +25,13 @@ namespace GenteFit.WPF
 
         private void BtnClientes_Click(object sender, RoutedEventArgs e)
         {
-            var ventana = new ClientesRecepcionWindow(_usuarioAutenticado)
-            {
-                Owner=this
-            };
-            ventana.ShowDialog();
+            var ventana = new ClientesRecepcionWindow(_usuarioAutenticado);
+            NavegacionCliente.AbrirDesde(this, ventana);
         }
         private void BtnHorario_Click(object sender, RoutedEventArgs e)
         {
-            var ventana = new HorarioPersonalWindow(_usuarioAutenticado) { Owner = this };
-            ventana.ShowDialog();
+            var ventana = new HorarioPersonalWindow(_usuarioAutenticado);
+            NavegacionCliente.AbrirDesde(this, ventana);
         }
     }
 }

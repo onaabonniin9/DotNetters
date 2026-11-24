@@ -73,23 +73,21 @@ namespace GenteFit.WPF
             await CargarAsync(Buscador.Text);
         }
 
-        private async void BtnVer_Click(object sender, RoutedEventArgs e)
+        private void BtnVer_Click(object sender, RoutedEventArgs e)
         {
             if (sender is not Button boton || boton.Tag is not int clienteId)
             return;
 
-            var ventana = new DetalleClienteRecepcionWindow(_usuarioAutenticado, clienteId)
-            {
-                Owner = this
-            };
+            var ventana = new DetalleClienteRecepcionWindow(_usuarioAutenticado, clienteId);
 
-            ventana.ShowDialog();
-
-            await CargarAsync(Buscador.Text);
+            NavegacionCliente.AbrirDesde(this, ventana);
         }
+
+        private void BtnCerrar_Click(object sender, RoutedEventArgs e) => NavegacionCliente.AbrirDesde(this, new PanelRecepcionWindow(_usuarioAutenticado));
 
         private sealed record ClienteFila(int Id, string NombreCompleto, bool Activo)
         {
+            public string Estado => Activo ? "Activo" : "Inactivo";
             public Brush ColorEstado => Activo ? ColorActivo : ColorInactivo;
         }
 

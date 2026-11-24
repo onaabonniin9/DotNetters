@@ -1,5 +1,4 @@
-﻿
-using GenteFit.Data;
+﻿using GenteFit.Data;
 using GenteFit.Models;
 using GenteFit.Services;
 using Microsoft.EntityFrameworkCore;
@@ -24,6 +23,8 @@ Console.WriteLine(conectado
 
 if (conectado)
 {
+    // CLIENTE DE PRUEBA
+
     const string usuarioPrueba = "clienteprueba";
 
     bool existe = await contexto.Usuarios
@@ -51,5 +52,36 @@ if (conectado)
     else
     {
         Console.WriteLine("El cliente de prueba ya existe.");
+    }
+
+    // RECEPCIONISTA DE PRUEBA
+
+    const string usuarioRecepcion = "recepcionprueba";
+
+    bool existeRecepcionista = await contexto.Usuarios
+        .AnyAsync(u => u.Username == usuarioRecepcion);
+
+    if (!existeRecepcionista)
+    {
+        var recepcionista = new Recepcionista
+        {
+            Name = "Laura",
+            Surname = "García López",
+            Username = usuarioRecepcion,
+            Password = SeguridadContrasenas.CrearHash("Prueba2026!"),
+            DNI = "00000001R",
+            Email = "recepcion.prueba@example.com",
+            Phone = "600000001",
+            Active = true
+        };
+
+        var recepcionistaService = new RecepcionistaService(contexto);
+        await recepcionistaService.CrearAsync(recepcionista);
+
+        Console.WriteLine("Recepcionista de prueba creado correctamente.");
+    }
+    else
+    {
+        Console.WriteLine("El recepcionista de prueba ya existe.");
     }
 }

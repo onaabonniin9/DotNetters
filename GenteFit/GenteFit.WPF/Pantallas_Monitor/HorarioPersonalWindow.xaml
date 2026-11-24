@@ -3,56 +3,101 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:componentes="clr-namespace:GenteFit.WPF.Components"
         Title="GenteFit - Horario"
-        Height="720" Width="1024" MinHeight="560" MinWidth="760"
+        Height="720" Width="1024" MinHeight="560" MinWidth="900"
         WindowStartupLocation="CenterOwner"
-        Background="#8FA9A1" FontFamily="Poppins">
+        Background="#17483D" FontFamily="Poppins">
 
-    <Grid>
+
+    <Window.Resources>
+        <Style x:Key="BotonRedondeado" TargetType="Button">
+            <Setter Property="Background" Value="#FBF8F1"/>
+            <Setter Property="Foreground" Value="#17483D"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Padding" Value="12,6"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Fondo" Background="{TemplateBinding Background}"
+                                CornerRadius="8" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Fondo" Property="Opacity" Value="0.85"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Fondo" Property="Opacity" Value="0.7"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="Fondo" Property="Opacity" Value="0.45"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid Margin="30">
         <Grid.RowDefinitions>
-            <RowDefinition Height="72"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <componentes:CabeceraComun x:Name="Cabecera" Grid.Row="0" Margin="45,12,45,0"/>
+        <componentes:CabeceraComun x:Name="Cabecera" Grid.Row="0" Margin="0,0,0,12" Foreground="#FBF8F1"/>
 
         <TextBlock x:Name="TxtTitulo" Grid.Row="1" Text="Horario" FontSize="30"
                    FontWeight="Bold" Foreground="White"
                    HorizontalAlignment="Center" Margin="0,5,0,8"/>
 
         <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center"
-                    Margin="0,0,0,12">
-            <Button Content="◀" Width="40" Height="30" Click="BtnAnterior_Click"/>
+                    Margin="0,0,0,20">
+            <Button Content="◀" Width="40" Height="38" Style="{StaticResource BotonRedondeado}" Click="BtnAnterior_Click"/>
             <TextBlock x:Name="TxtRango" Foreground="White" FontSize="15" FontWeight="Bold"
-                       Width="340" TextAlignment="Center" VerticalAlignment="Center"/>
-            <Button Content="▶" Width="40" Height="30" Click="BtnSiguiente_Click"/>
-            <Button Content="Hoy" Width="70" Height="30" Margin="14,0,0,0"
-                    Click="BtnHoy_Click"/>
+                       Width="240" TextAlignment="Center" VerticalAlignment="Center"/>
+            <Button Content="▶" Width="40" Height="38" Style="{StaticResource BotonRedondeado}" Click="BtnSiguiente_Click"/>
+            <Button Content="Hoy" Width="65" Height="38" Margin="14,0,0,0"
+                    Style="{StaticResource BotonRedondeado}" Click="BtnHoy_Click"/>
         </StackPanel>
 
-        <ScrollViewer Grid.Row="3" VerticalScrollBarVisibility="Auto" Margin="105,0,105,25">
-            <ItemsControl x:Name="ListaDias">
+        <ScrollViewer Grid.Row="3" VerticalScrollBarVisibility="Auto" Margin="0,0,0,12">
+            <ItemsControl x:Name="ListaDias" MaxWidth="1120">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <StackPanel Margin="0,0,0,12">
-                            <TextBlock Text="{Binding Titulo}" Foreground="White"
+                        <Border Background="#FBF8F1" CornerRadius="12" Padding="18,12" Margin="0,0,0,12">
+                        <StackPanel>
+                            <TextBlock Text="{Binding Titulo}" Foreground="#17483D"
                                        FontWeight="Bold" FontSize="16" Margin="2,0,0,6"/>
-                            <TextBlock Text="{Binding Vacio}" Foreground="White"
-                                       Margin="2,0,0,4"/>
+                            <TextBlock Text="{Binding Vacio}" Foreground="#525252" FontSize="13" Margin="2,0,0,4">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Vacio}" Value="">
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
                             <ItemsControl ItemsSource="{Binding Sesiones}">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
-                                        <Border Background="#FBF8F1" CornerRadius="4"
+                                        <Border Background="#EDF3F0" CornerRadius="8"
                                                 Padding="16,8" Margin="0,0,0,6">
                                             <Grid>
                                                 <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="110"/>
+                                                    <ColumnDefinition Width="95"/>
                                                     <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="70"/>
-                                                    <ColumnDefinition Width="110"/>
-                                                    <ColumnDefinition Width="100"/>
-                                                    <ColumnDefinition Width="70"/>
+                                                    <ColumnDefinition Width="65"/>
+                                                    <ColumnDefinition Width="95"/>
+                                                    <ColumnDefinition Width="90"/>
+                                                    <ColumnDefinition Width="65"/>
                                                 </Grid.ColumnDefinitions>
 
                                                 <TextBlock Grid.Column="0" Text="{Binding Hora}"
@@ -60,9 +105,9 @@
                                                            VerticalAlignment="Center"/>
 
                                                 <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                                    <TextBlock Text="{Binding Actividad}" FontWeight="Bold"
+                                                    <TextBlock Text="{Binding Actividad}" TextWrapping="Wrap" FontWeight="Bold"
                                                                Foreground="#252A27"/>
-                                                    <TextBlock Text="{Binding Lugar}" FontSize="12"
+                                                    <TextBlock Text="{Binding Lugar}" TextWrapping="Wrap" FontSize="12"
                                                                Foreground="#525252"/>
                                                 </StackPanel>
 
@@ -76,8 +121,8 @@
                                                            Foreground="{Binding ColorEstado}"
                                                            FontWeight="Bold" VerticalAlignment="Center"/>
 
-                                                <Button Grid.Column="5" Content="Ver" Height="28"
-                                                        Background="#707070" Foreground="White"
+                                                <Button Grid.Column="5" Content="Ver" Height="34" Style="{StaticResource BotonRedondeado}"
+                                                        Background="#17483D" Foreground="White"
                                                         BorderThickness="0"
                                                         Tag="{Binding Id}" Click="BtnVer_Click"/>
                                             </Grid>
@@ -86,9 +131,13 @@
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
                         </StackPanel>
+                        </Border>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
         </ScrollViewer>
+        <Button Grid.Row="4" Content="Cerrar" Width="120" Height="40"
+                HorizontalAlignment="Right" Style="{StaticResource BotonRedondeado}"
+                Click="BtnCerrar_Click"/>
     </Grid>
 </Window>

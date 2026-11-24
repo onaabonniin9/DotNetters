@@ -1,4 +1,4 @@
-﻿
+
 using System.Windows;
 using System.Windows.Controls;
 
@@ -125,7 +125,7 @@ namespace GenteFit.WPF
                         new PanelPrincipalWindow(usuarioAutenticado),
 
                     GenteFit.Models.TipoCuentaUsuario.Recepcionista =>
-                        new PanelPrincipalWindow(usuarioAutenticado),
+                        new PanelRecepcionWindow(usuarioAutenticado),
                     
                     GenteFit.Models.TipoCuentaUsuario.Monitor =>
                         new PanelMonitorWindow(usuarioAutenticado),
@@ -138,9 +138,7 @@ namespace GenteFit.WPF
                 };
 
                 GenteFit.WPF.Components.SesionVisual.UsuarioActual = usuarioAutenticado;
-                panel.Show();
-
-                Close();
+                NavegacionCliente.AbrirDesde(this, panel);
             }
             catch (Exception)
             {

@@ -15,9 +15,10 @@ namespace GenteFit.WPF
 
         private readonly UsuarioAutenticado _usuarioAutenticado;
         private readonly int _sesionId;
+        private readonly DateOnly? _inicioHorario;
         private readonly bool _esMonitor;
 
-        public DetalleSesionPersonalWindow(UsuarioAutenticado usuarioAutenticado, int sesionId)
+        public DetalleSesionPersonalWindow(UsuarioAutenticado usuarioAutenticado, int sesionId, DateOnly? inicioHorario = null)
         {
             ArgumentNullException.ThrowIfNull(usuarioAutenticado);
 
@@ -31,6 +32,7 @@ namespace GenteFit.WPF
             InitializeComponent();
             _usuarioAutenticado = usuarioAutenticado;
             _sesionId = sesionId;
+            _inicioHorario = inicioHorario;
             _esMonitor = usuarioAutenticado.Tipo == TipoCuentaUsuario.Monitor;
 
             Cabecera.Rol = _esMonitor ? "Monitor" : "Recepción";
@@ -52,7 +54,7 @@ namespace GenteFit.WPF
                 {
                     MessageBox.Show("La sesión ya no existe.", "GenteFit",
                         MessageBoxButton.OK, MessageBoxImage.Warning);
-                    Close();
+                    VolverAlHorario();
                     return;
                 }
 
@@ -90,7 +92,7 @@ namespace GenteFit.WPF
             catch (UnauthorizedAccessException ex)
             {
                 MessageBox.Show(ex.Message, "Acceso denegado", MessageBoxButton.OK, MessageBoxImage.Warning);
-                Close();
+                NavegacionCliente.CerrarSesion(this);
             }
             catch (Exception)
             {
@@ -99,9 +101,11 @@ namespace GenteFit.WPF
             }
         }
 
+        private void VolverAlHorario() => NavegacionCliente.AbrirDesde(this, new HorarioPersonalWindow(_usuarioAutenticado, _inicioHorario));
+
         private void BtnVolver_Click(object sender, RoutedEventArgs e)
         {
-            Close();
+            VolverAlHorario();
         }
 
         private sealed record ReservaFila(string Cliente, string Fecha);

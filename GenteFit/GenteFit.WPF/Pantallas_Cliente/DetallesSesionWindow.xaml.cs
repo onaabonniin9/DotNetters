@@ -391,9 +391,7 @@ namespace GenteFit.WPF
 
         private void Cabecera_CerrarSesionSolicitado(object sender, EventArgs e)
         {
-            var inicio = new MainWindow();
-            inicio.Show();
-            Close();
+            NavegacionCliente.CerrarSesion(this);
         }
 
     }

@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media;
 using GenteFit.Data;
 using GenteFit.Models;
@@ -23,6 +24,9 @@ namespace GenteFit.WPF
 
         private readonly UsuarioAutenticado _usuarioAutenticado;
         private readonly int _clienteId;
+        private DetalleClienteRecepcion? _detalleActual;
+        private bool _editando;
+        private bool _guardando;
 
         public DetalleClienteRecepcionWindow(UsuarioAutenticado usuarioAutenticado, int clienteId)
         {
@@ -40,6 +44,7 @@ namespace GenteFit.WPF
             _clienteId = clienteId;
 
             Loaded += async (_, _) => await CargarAsync();
+            Closing += (_, e) => { if (_guardando) e.Cancel = true; };
         }
 
         private async Task CargarAsync()
@@ -56,16 +61,19 @@ namespace GenteFit.WPF
                 if (detalle is null)
                 {
                     MessageBox.Show("El cliente ya no existe", "GenteFit", MessageBoxButton.OK, MessageBoxImage.Warning);
-                    Close();
+                    VolverAlListado();
                     return;
                 }
+                _detalleActual = detalle;
                 Mostrar(detalle);
+                BtnEditar.IsEnabled = true;
+                BtnBaja.IsEnabled = true;
                 
             }
             catch (UnauthorizedAccessException ex)
             {
                 MessageBox.Show(ex.Message, "Acceso denegado", MessageBoxButton.OK, MessageBoxImage.Warning);
-                Close();
+                NavegacionCliente.CerrarSesion(this);
             }
             catch (Exception)
             {
@@ -120,9 +128,118 @@ namespace GenteFit.WPF
             return "•••• •••• •••• " + iban[^4..];
         }
 
+        private void CambiarEdicion(bool editar)
+        {
+            _editando = editar;
+            foreach (TextBox campo in new[] { TxtNombre, TxtApellidos, TxtEmail, TxtUsuario, TxtTelefono, TxtDireccion, TxtCiudad, TxtCodigoPostal, TxtNacimiento, TxtDni })
+                campo.IsReadOnly = !editar;
+
+            BtnEditar.Visibility = editar ? Visibility.Collapsed : Visibility.Visible;
+            BtnGuardar.Visibility = editar ? Visibility.Visible : Visibility.Collapsed;
+            BtnCancelar.Visibility = editar ? Visibility.Visible : Visibility.Collapsed;
+            BtnBaja.IsEnabled = !editar && _detalleActual is not null;
+        }
+
+        private void BtnEditar_Click(object sender, RoutedEventArgs e)
+        {
+            if (_detalleActual is null || _guardando) return;
+            CambiarEdicion(true);
+            TxtNombre.Focus();
+        }
+
+        private void BtnCancelar_Click(object sender, RoutedEventArgs e)
+        {
+            if (_guardando) return;
+            if (_detalleActual is not null) Mostrar(_detalleActual);
+            CambiarEdicion(false);
+        }
+
+        private async void BtnGuardar_Click(object sender, RoutedEventArgs e)
+        {
+            if (!_editando || _guardando || _detalleActual is null) return;
+
+            if (!DateTime.TryParseExact(TxtNacimiento.Text.Trim(), "dd/MM/yyyy", Es,
+                    DateTimeStyles.None, out DateTime nacimiento) || nacimiento.Date > DateTime.Today)
+            {
+                MessageBox.Show("Introduce una fecha de nacimiento válida (dd/mm/aaaa), no futura.",
+                    "Revisar datos", MessageBoxButton.OK, MessageBoxImage.Warning);
+                TxtNacimiento.Focus();
+                return;
+            }
+
+            _guardando = true;
+            BtnGuardar.IsEnabled = false;
+            BtnCancelar.IsEnabled = false;
+            foreach (TextBox campo in new[] { TxtNombre, TxtApellidos, TxtEmail, TxtUsuario, TxtTelefono, TxtDireccion, TxtCiudad, TxtCodigoPostal, TxtNacimiento, TxtDni })
+                campo.IsReadOnly = true;
+            try
+            {
+                var factory = new GenteFitContextFactory();
+                await using var contexto = factory.CreateDbContext(Array.Empty<string>());
+                var clienteService = new ClienteService(contexto);
+
+                // Revalidar los permisos de recepción antes de actualizar.
+                var detalle = await clienteService.ConsultarDetalleParaRecepcionAsync(
+                    _usuarioAutenticado, _clienteId);
+                if (detalle is null)
+                {
+                    MessageBox.Show("El cliente ya no existe.", "GenteFit",
+                        MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                bool actualizado = await clienteService.ActualizarAsync(
+                    _clienteId, TxtNombre.Text.Trim(), TxtApellidos.Text.Trim(),
+                    TxtUsuario.Text.Trim(), TxtEmail.Text.Trim(), TxtTelefono.Text.Trim(),
+                    TxtDni.Text.Trim(), nacimiento, TxtDireccion.Text.Trim(),
+                    TxtCiudad.Text.Trim(), TxtCodigoPostal.Text.Trim(), detalle.Cliente.IBAN);
+
+                if (!actualizado)
+                {
+                    MessageBox.Show("No se ha podido actualizar el cliente.", "GenteFit",
+                        MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                CambiarEdicion(false);
+                _detalleActual = null;
+                BtnEditar.IsEnabled = false;
+                BtnBaja.IsEnabled = false;
+                await CargarAsync();
+                MessageBox.Show("Cliente actualizado correctamente.", "GenteFit",
+                    MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                MessageBox.Show(ex.Message, "Acceso denegado", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+            catch (ArgumentException ex)
+            {
+                MessageBox.Show(ex.Message, "Revisar datos", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("No se han podido guardar los cambios. Revisa los datos y la conexión.",
+                    "GenteFit", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                _guardando = false;
+                BtnGuardar.IsEnabled = true;
+                BtnCancelar.IsEnabled = true;
+                if (_editando) CambiarEdicion(true);
+            }
+        }
+
+        private void VolverAlListado()
+        {
+            if (!_guardando)
+                NavegacionCliente.AbrirDesde(this, new ClientesRecepcionWindow(_usuarioAutenticado));
+        }
+
         private void BtnVolver_Click(object sender, RoutedEventArgs e)
         {
-            Close();
+            VolverAlListado();
         }
 
         private async void BtnBaja_Click(object sender, RoutedEventArgs e)
@@ -150,7 +267,7 @@ namespace GenteFit.WPF
                     "GenteFit",
                     MessageBoxButton.OK, MessageBoxImage.Information);
                 
-                Close();
+                VolverAlListado();
             }
             catch(UnauthorizedAccessException ex)
             {

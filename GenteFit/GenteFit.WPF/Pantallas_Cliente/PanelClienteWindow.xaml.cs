@@ -52,9 +52,7 @@ namespace GenteFit.WPF
                     MessageBoxButton.OK,
                     MessageBoxImage.Warning);
 
-                var inicioSesion = new MainWindow();
-                inicioSesion.Show();
-                Close();
+                NavegacionCliente.CerrarSesion(this);
             }
             catch (Exception)
             {
@@ -106,9 +104,7 @@ namespace GenteFit.WPF
 
         private void Cabecera_CerrarSesionSolicitado(object sender, EventArgs e)
         {
-            var inicio = new MainWindow();
-            inicio.Show();
-            Close();
+            NavegacionCliente.CerrarSesion(this);
         }
 
     }

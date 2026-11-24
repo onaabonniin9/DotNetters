@@ -108,17 +108,18 @@ public partial class CabeceraComun : UserControl
                 return;
 
             var panel = new PanelClienteWindow(usuario);
-            panel.Show();
-            ventana.Close();
+            NavegacionCliente.AbrirDesde(ventana, panel);
         }
         else if (Rol == "Recepción" || Rol == "Monitor")
         {
-            while (ventana.Owner is not null)
-            {
-                Window propietaria = ventana.Owner;
-                ventana.Close();
-                ventana = propietaria;
-            }
+            if (ventana is PanelMonitorWindow or PanelRecepcionWindow)
+                return;
+            UsuarioAutenticado? usuario = SesionVisual.UsuarioActual;
+            if (usuario is null) return;
+            if (Rol == "Monitor" && usuario.Tipo == TipoCuentaUsuario.Monitor)
+                NavegacionCliente.AbrirDesde(ventana, new PanelMonitorWindow(usuario));
+            else if (Rol == "Recepción" && usuario.Tipo == TipoCuentaUsuario.Recepcionista)
+                NavegacionCliente.AbrirDesde(ventana, new PanelRecepcionWindow(usuario));
         }
     }
 
@@ -127,6 +128,12 @@ public partial class CabeceraComun : UserControl
         Window? ventana = Window.GetWindow(this);
         if (ventana is null)
             return;
+
+        if (Rol != "Administrador")
+        {
+            NavegacionCliente.CerrarSesion(ventana);
+            return;
+        }
 
         var login = new MainWindow();
         login.Show();

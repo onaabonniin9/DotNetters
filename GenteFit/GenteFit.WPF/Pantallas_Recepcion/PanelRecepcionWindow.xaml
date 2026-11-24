@@ -7,54 +7,87 @@
         WindowStartupLocation="CenterScreen"
         Background="#FBF8F1" FontFamily="Poppins">
 
-    <Window.Resources>
-        <Style x:Key="BotonMenu" TargetType="Button">
-            <Setter Property="Height" Value="46"/>
-            <Setter Property="FontSize" Value="15"/>
-            <Setter Property="FontWeight" Value="Bold"/>
-            <Setter Property="Cursor" Value="Hand"/>
-            <Setter Property="Margin" Value="0,0,0,12"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <Border Background="{TemplateBinding Background}"
-                                CornerRadius="6">
-                            <ContentPresenter HorizontalAlignment="Center"
-                                              VerticalAlignment="Center"/>
-                        </Border>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-    </Window.Resources>
-
-    <Grid>
+    <Grid Margin="30">
         <Grid.RowDefinitions>
-            <RowDefinition Height="72"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <componentes:CabeceraComun Grid.Row="0" Rol="Recepción"
-                                   Margin="45,12,45,0"/>
+        <componentes:CabeceraComun Grid.Row="0" Rol="Recepción" Margin="0,0,0,12"/>
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Width="450">
 
-        <StackPanel Grid.Row="1" Width="420"
-                    VerticalAlignment="Center" HorizontalAlignment="Center">
+            <Viewbox Width="110" Height="110" HorizontalAlignment="Center" Margin="0,0,0,15">
 
-            <TextBlock x:Name="TxtBienvenida" Text="¡Bienvenido/a!"
-                       FontSize="24" FontWeight="Bold" Foreground="#17483D"
-                       HorizontalAlignment="Center"/>
+                <Canvas Width="166" Height="166">
 
-            <TextBlock Text="¿Qué quieres hacer hoy?" FontSize="14"
-                       Foreground="#252A27" HorizontalAlignment="Center"
-                       Margin="0,4,0,28"/>
+                    <Ellipse Width="156" Height="156" Canvas.Left="5" Canvas.Top="5" Stroke="#17483D" StrokeThickness="9"/>
 
-            <Button Content="Clientes" Style="{StaticResource BotonMenu}"
-                    Background="#17483D" Foreground="White"
-                    Click="BtnClientes_Click"/>
+                    <Rectangle Width="102" Height="12" Canvas.Left="32" Canvas.Top="77" Fill="#17483D"/>
 
-            <Button Content="Ver horario"
-                    Style="{StaticResource BotonMenu}"
-                    Background="#C8D1D9" Foreground="#252A27"
-                    Click="BtnHorario_Click"/>
-        </StackPanel>
+                    <Rectangle Width="15" Height="44" RadiusX="7" RadiusY="7" Canvas.Left="29" Canvas.Top="61" Fill="#17483D"/>
+
+                    <Rectangle Width="15" Height="44" RadiusX="7" RadiusY="7" Canvas.Left="122" Canvas.Top="61" Fill="#17483D"/>
+
+                    <Rectangle Width="15" Height="36" RadiusX="7" RadiusY="7" Canvas.Left="44" Canvas.Top="65" Fill="#8FA9A1"/>
+
+                    <Rectangle Width="15" Height="36" RadiusX="7" RadiusY="7" Canvas.Left="107" Canvas.Top="65" Fill="#8FA9A1"/>
+                </Canvas>
+            </Viewbox>
+
+            <TextBlock HorizontalAlignment="Center" FontFamily="DM Sans" FontSize="32" FontWeight="Bold" Margin="0,0,0,5">
+                <Run Text="Gente" Foreground="#17483D"/>
+                <Run Text="Fit" Foreground="#8FA9A1"/>
+            </TextBlock>
+
+            <TextBlock Text="YOGA · BODYPUMP · FITNESS" FontSize="12" FontWeight="Bold" Foreground="#17483D" HorizontalAlignment="Center" Margin="0,0,0,30"/>
+
+            <TextBlock x:Name="TxtBienvenida" Text="¡Bienvenido/a!" FontSize="24" FontWeight="Bold" Foreground="#17483D" HorizontalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap" Margin="0,0,0,8"/>
+
+            <TextBlock Text="¿Qué quieres hacer hoy?" FontSize="16" Foreground="#252A27" HorizontalAlignment="Center" Margin="0,0,0,35"/>
+
+            <Button x:Name="BtnClientes" Height="50" Margin="0,0,0,15" Background="#17483D" Foreground="White" FontWeight="SemiBold" FontSize="16" Cursor="Hand" Click="BtnClientes_Click">
+
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="8" Padding="20,0">
+
+                            <Grid>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
+
+                                    <TextBlock Text="👤" FontSize="18" Margin="0,0,12,0" VerticalAlignment="Center"/>
+
+                                    <TextBlock Text="Clientes" VerticalAlignment="Center" FontSize="16" FontWeight="SemiBold"/>
+                                </StackPanel>
+
+                                <TextBlock Text="&gt;" HorizontalAlignment="Right" VerticalAlignment="Center" FontSize="18" FontWeight="Bold" Foreground="White"/>
+                            </Grid>
+                        </Border>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+
+            <Button x:Name="BtnHorario" Height="50" Margin="0,0,0,15" Background="#8FA9A1" Foreground="#17483D" FontWeight="SemiBold" FontSize="16" Cursor="Hand" Click="BtnHorario_Click">
+
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="8" Padding="20,0">
+
+                            <Grid>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
+
+                                    <TextBlock Text="📅" FontSize="18" Margin="0,0,12,0" VerticalAlignment="Center"/>
+
+                                    <TextBlock Text="Ver horario" VerticalAlignment="Center" FontSize="16" FontWeight="SemiBold"/>
+                                </StackPanel>
+
+                                <TextBlock Text="&gt;" HorizontalAlignment="Right" VerticalAlignment="Center" FontSize="18" FontWeight="Bold"/>
+                            </Grid>
+                        </Border>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+
+            </StackPanel>
+        </ScrollViewer>
     </Grid>
 </Window>

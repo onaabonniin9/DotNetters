@@ -5,43 +5,94 @@
         Title="GenteFit - Detalle de cliente"
         Height="800" Width="1024" MinHeight="600" MinWidth="800"
         WindowStartupLocation="CenterOwner"
-        Background="#8FA9A1" FontFamily="Poppins">
+        Background="#17483D" FontFamily="Poppins">
 
     <Window.Resources>
+        <Style x:Key="BotonRedondeado" TargetType="Button">
+            <Setter Property="Background" Value="#FBF8F1"/>
+            <Setter Property="Foreground" Value="#17483D"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Padding" Value="12,6"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Fondo" Background="{TemplateBinding Background}"
+                                CornerRadius="8" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Fondo" Property="Opacity" Value="0.85"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Fondo" Property="Opacity" Value="0.7"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="Fondo" Property="Opacity" Value="0.45"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    
         <Style x:Key="Etiqueta" TargetType="TextBlock">
-            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="FontSize" Value="12"/>
             <Setter Property="FontWeight" Value="Bold"/>
             <Setter Property="Foreground" Value="#17483D"/>
             <Setter Property="Margin" Value="0,8,0,2"/>
         </Style>
         <Style x:Key="Valor" TargetType="TextBlock">
-            <Setter Property="Background" Value="#C8D1D9"/>
-            <Setter Property="Padding" Value="10,5"/>
-            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Background" Value="#EDF3F0"/>
+            <Setter Property="Padding" Value="10,8"/>
+            <Setter Property="FontSize" Value="14"/>
             <Setter Property="Foreground" Value="#252A27"/>
             <Setter Property="Margin" Value="0,0,16,0"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
         </Style>
         <Style x:Key="TituloTarjeta" TargetType="TextBlock">
-            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontSize" Value="18"/>
             <Setter Property="FontWeight" Value="Bold"/>
             <Setter Property="Foreground" Value="#17483D"/>
         </Style>
+        <Style x:Key="CampoEditable" TargetType="TextBox">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#8FA9A1"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="10,7"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Foreground" Value="#252A27"/>
+            <Setter Property="Margin" Value="0,0,16,0"/>
+            <Setter Property="IsReadOnly" Value="True"/>
+            <Style.Triggers>
+                <Trigger Property="IsReadOnly" Value="True">
+                    <Setter Property="Background" Value="#EDF3F0"/>
+                    <Setter Property="BorderThickness" Value="0"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
     </Window.Resources>
 
-    <Grid>
+    <Grid Margin="30">
         <Grid.RowDefinitions>
-            <RowDefinition Height="72"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
         <componentes:CabeceraComun Grid.Row="0" Rol="Recepción"
-                                   Margin="45,12,45,0"/>
+                                   Margin="0,0,0,12" Foreground="#FBF8F1"/>
 
-        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
-            <StackPanel MaxWidth="760" Margin="20,10,20,25">
+        <TextBlock Grid.Row="1" Text="Detalle del cliente" FontSize="30" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" Margin="0,5,0,15"/>
+        <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
+            <StackPanel MaxWidth="1000" Margin="0,0,0,12">
 
                 <!-- Datos del cliente -->
-                <Border Background="#FBF8F1" CornerRadius="6" Padding="22,16">
+                <Border Background="#FBF8F1" CornerRadius="12" Padding="22,16">
                     <StackPanel>
                         <TextBlock Text="CLIENTE" Style="{StaticResource TituloTarjeta}"/>
 
@@ -53,28 +104,28 @@
 
                             <StackPanel Grid.Column="0">
                                 <TextBlock Text="Nombre" Style="{StaticResource Etiqueta}"/>
-                                <TextBlock x:Name="TxtNombre" Style="{StaticResource Valor}"/>
+                                <TextBox x:Name="TxtNombre" Style="{StaticResource CampoEditable}"/>
                                 <TextBlock Text="Apellidos" Style="{StaticResource Etiqueta}"/>
-                                <TextBlock x:Name="TxtApellidos" Style="{StaticResource Valor}"/>
+                                <TextBox x:Name="TxtApellidos" Style="{StaticResource CampoEditable}"/>
                                 <TextBlock Text="Email" Style="{StaticResource Etiqueta}"/>
-                                <TextBlock x:Name="TxtEmail" Style="{StaticResource Valor}"/>
+                                <TextBox x:Name="TxtEmail" Style="{StaticResource CampoEditable}"/>
                                 <TextBlock Text="Usuario" Style="{StaticResource Etiqueta}"/>
-                                <TextBlock x:Name="TxtUsuario" Style="{StaticResource Valor}"/>
+                                <TextBox x:Name="TxtUsuario" Style="{StaticResource CampoEditable}"/>
                                 <TextBlock Text="Teléfono" Style="{StaticResource Etiqueta}"/>
-                                <TextBlock x:Name="TxtTelefono" Style="{StaticResource Valor}"/>
+                                <TextBox x:Name="TxtTelefono" Style="{StaticResource CampoEditable}"/>
                                 <TextBlock Text="Dirección" Style="{StaticResource Etiqueta}"/>
-                                <TextBlock x:Name="TxtDireccion" Style="{StaticResource Valor}"/>
+                                <TextBox x:Name="TxtDireccion" Style="{StaticResource CampoEditable}"/>
                             </StackPanel>
 
                             <StackPanel Grid.Column="1">
                                 <TextBlock Text="Ciudad" Style="{StaticResource Etiqueta}"/>
-                                <TextBlock x:Name="TxtCiudad" Style="{StaticResource Valor}"/>
+                                <TextBox x:Name="TxtCiudad" Style="{StaticResource CampoEditable}"/>
                                 <TextBlock Text="Código postal" Style="{StaticResource Etiqueta}"/>
-                                <TextBlock x:Name="TxtCodigoPostal" Style="{StaticResource Valor}"/>
-                                <TextBlock Text="Fecha de nacimiento" Style="{StaticResource Etiqueta}"/>
-                                <TextBlock x:Name="TxtNacimiento" Style="{StaticResource Valor}"/>
+                                <TextBox x:Name="TxtCodigoPostal" Style="{StaticResource CampoEditable}"/>
+                                <TextBlock Text="Fecha de nacimiento (dd/mm/aaaa)" Style="{StaticResource Etiqueta}"/>
+                                <TextBox x:Name="TxtNacimiento" Style="{StaticResource CampoEditable}"/>
                                 <TextBlock Text="DNI" Style="{StaticResource Etiqueta}"/>
-                                <TextBlock x:Name="TxtDni" Style="{StaticResource Valor}"/>
+                                <TextBox x:Name="TxtDni" Style="{StaticResource CampoEditable}"/>
                                 <TextBlock Text="Plan mensual" Style="{StaticResource Etiqueta}"/>
                                 <TextBlock x:Name="TxtPlan" Style="{StaticResource Valor}"/>
                                 <TextBlock Text="IBAN" Style="{StaticResource Etiqueta}"/>
@@ -87,19 +138,22 @@
                 <!-- Botones -->
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center"
                             Margin="0,14,0,14">
-                    <Button Content="Editar cliente" Width="150" Height="34"
-                            Margin="0,0,10,0" Background="#17483D" Foreground="White"
-                            IsEnabled="False"
-                            ToolTip="Se activará con la pantalla de edición"/>
-                    <Button Content="Baja cliente" Width="150" Height="34"
-                            Margin="0,0,10,0" Background="White" Foreground="#8B0000"
+                    <Button x:Name="BtnEditar" Content="Editar cliente" Width="150" Height="40"
+                            Style="{StaticResource BotonRedondeado}" Margin="0,0,10,0"
+                            IsEnabled="False" Click="BtnEditar_Click"/>
+                    <Button x:Name="BtnGuardar" Content="Guardar cambios" Width="160" Height="40"
+                            Style="{StaticResource BotonRedondeado}" Margin="0,0,10,0"
+                            Visibility="Collapsed" Click="BtnGuardar_Click"/>
+                    <Button x:Name="BtnCancelar" Content="Cancelar" Width="120" Height="40"
+                            Style="{StaticResource BotonRedondeado}" Margin="0,0,10,0"
+                            Background="#C8D1D9" Visibility="Collapsed" Click="BtnCancelar_Click"/>
+                    <Button x:Name="BtnBaja" IsEnabled="False" Content="Baja cliente" Width="150" Height="40" Style="{StaticResource BotonRedondeado}"
+                            Margin="0,0,10,0" Background="#8B0000" Foreground="White"
                             Click="BtnBaja_Click"/>
-                    <Button Content="Volver" Width="110" Height="34"
-                            Click="BtnVolver_Click"/>
                 </StackPanel>
 
                 <!-- Pagos -->
-                <Border Background="#FBF8F1" CornerRadius="6" Padding="22,16">
+                <Border Background="#FBF8F1" CornerRadius="12" Padding="22,16">
                     <StackPanel>
                         <TextBlock Text="PAGOS" Style="{StaticResource TituloTarjeta}"
                                    Margin="0,0,0,8"/>
@@ -111,7 +165,7 @@
                         <ItemsControl x:Name="ListaPagos">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <Border Background="#C8D1D9" Padding="12,8" Margin="0,0,0,6">
+                                    <Border Background="#EDF3F0" CornerRadius="8" Padding="12,8" Margin="0,0,0,6">
                                         <Grid>
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="90"/>
@@ -138,5 +192,7 @@
                 </Border>
             </StackPanel>
         </ScrollViewer>
+        <Button Grid.Row="3" Content="Cerrar" Width="120" Height="40"
+                HorizontalAlignment="Right" Style="{StaticResource BotonRedondeado}" Click="BtnVolver_Click"/>
     </Grid>
 </Window>
