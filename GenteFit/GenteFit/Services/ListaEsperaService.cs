@@ -35,10 +35,9 @@ public class ListaEsperaService
         _context = context;
     }
 
-    private IQueryable<ListaEsperaResumen> ConsultarResumenes()
+    private IQueryable<ListaEsperaResumen> ConsultarResumenes(IQueryable<ListaEspera> consulta)
     {
-        return _context.ListasEspera
-            .AsNoTracking()
+        return consulta
             .Select(l => new ListaEsperaResumen(
                 l.Id,
                 l.Cliente.Id,
@@ -151,8 +150,10 @@ public class ListaEsperaService
 
         await _context.SaveChangesAsync();
 
-        var resultado = await ConsultarResumenes()
-            .FirstAsync(l => l.Id == entrada.Id);
+        var resultado = await ConsultarResumenes(_context.ListasEspera
+            .AsNoTracking()
+            .Where(l => l.Id == entrada.Id))
+            .FirstAsync();
 
         await transaction.CommitAsync();
 
@@ -165,9 +166,10 @@ public class ListaEsperaService
         await AutorizacionService.ExigirAdministradorActivoAsync(
             _context, usuarioActual);
 
-        return await ConsultarResumenes()
-            .OrderBy(l => l.SesionId)
-            .ThenBy(l => l.Posicion)
+        return await ConsultarResumenes(_context.ListasEspera
+            .AsNoTracking()
+            .OrderBy(l => l.Sesion.Id)
+            .ThenBy(l => l.Position))
             .ToListAsync();
     }
 
@@ -178,9 +180,10 @@ public class ListaEsperaService
             await AutorizacionService.ExigirClienteActivoAsync(
                 _context, usuarioActual);
 
-        return await ConsultarResumenes()
-            .Where(l => l.ClienteId == clienteId)
-            .OrderByDescending(l => l.JoinedAt)
+        return await ConsultarResumenes(_context.ListasEspera
+            .AsNoTracking()
+            .Where(l => l.Cliente.Id == clienteId)
+            .OrderByDescending(l => l.JoinedAt))
             .ToListAsync();
     }
 
@@ -191,12 +194,11 @@ public class ListaEsperaService
         await AutorizacionService.ExigirAdministradorActivoAsync(
             _context, usuarioActual);
 
-        return await ConsultarResumenes()
-            .Where(l =>
-                l.SesionId == sesionId &&
-                l.Estado == EstadoListaEspera.EN_ESPERA)
-            .OrderBy(l => l.Posicion)
-            .ThenBy(l => l.JoinedAt)
+        return await ConsultarResumenes(_context.ListasEspera
+            .AsNoTracking()
+            .Where(l => l.Sesion.Id == sesionId && l.Status == EstadoListaEspera.EN_ESPERA)
+            .OrderBy(l => l.Position)
+            .ThenBy(l => l.JoinedAt))
             .ToListAsync();
     }
 
@@ -209,8 +211,10 @@ public class ListaEsperaService
             await AutorizacionService.ExigirAdministradorActivoAsync(
                 _context, usuarioActual);
 
-            return await ConsultarResumenes()
-                .FirstOrDefaultAsync(l => l.Id == id);
+            return await ConsultarResumenes(_context.ListasEspera
+            .AsNoTracking()
+            .Where(l => l.Id == id))
+                .FirstOrDefaultAsync();
         }
 
         if (usuarioActual.Tipo == TipoCuentaUsuario.Cliente)
@@ -219,10 +223,10 @@ public class ListaEsperaService
                 await AutorizacionService.ExigirClienteActivoAsync(
                     _context, usuarioActual);
 
-            return await ConsultarResumenes()
-                .FirstOrDefaultAsync(l =>
-                    l.Id == id &&
-                    l.ClienteId == clienteId);
+            return await ConsultarResumenes(_context.ListasEspera
+            .AsNoTracking()
+            .Where(l => l.Id == id && l.Cliente.Id == clienteId))
+                .FirstOrDefaultAsync();
         }
 
         throw new UnauthorizedAccessException(

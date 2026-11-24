@@ -339,8 +339,7 @@ namespace GenteFit.WPF
             var panelCliente =
                 new PanelClienteWindow(_usuarioAutenticado);
 
-            panelCliente.Show();
-            Close();
+            NavegacionCliente.AbrirDesde(this, panelCliente);
         }
 
         private void CerrarSesion_Click(
@@ -357,5 +356,18 @@ namespace GenteFit.WPF
             mainWindow.Show();
             Close();
         }
+        private void Cabecera_InicioSolicitado(object sender, EventArgs e)
+        {
+            var panel = new PanelClienteWindow(_usuarioAutenticado);
+            NavegacionCliente.AbrirDesde(this, panel);
+        }
+
+        private void Cabecera_CerrarSesionSolicitado(object sender, EventArgs e)
+        {
+            var inicio = new MainWindow();
+            inicio.Show();
+            Close();
+        }
+
     }
 }

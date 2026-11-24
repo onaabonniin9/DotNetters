@@ -253,19 +253,17 @@ namespace GenteFit.WPF
             var panel =
                 new PanelClienteWindow(_usuarioAutenticado);
 
-            panel.Show();
-            Close();
+            NavegacionCliente.AbrirDesde(this, panel);
         }
 
         private void VolverHorario_Click(
             object sender,
-            MouseButtonEventArgs e)
+            RoutedEventArgs e)
         {
             var horario =
                 new HorarioClienteWindow(_usuarioAutenticado);
 
-            horario.Show();
-            Close();
+            NavegacionCliente.AbrirDesde(this, horario);
         }
 
 
@@ -385,6 +383,19 @@ namespace GenteFit.WPF
             _context.Dispose();
             base.OnClosed(e);
         }
+        private void Cabecera_InicioSolicitado(object sender, EventArgs e)
+        {
+            var panel = new PanelClienteWindow(_usuarioAutenticado);
+            NavegacionCliente.AbrirDesde(this, panel);
+        }
+
+        private void Cabecera_CerrarSesionSolicitado(object sender, EventArgs e)
+        {
+            var inicio = new MainWindow();
+            inicio.Show();
+            Close();
+        }
+
     }
 }
 

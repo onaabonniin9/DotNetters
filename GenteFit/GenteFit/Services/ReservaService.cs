@@ -43,10 +43,9 @@ public class ReservaService
         _context = context;
     }
 
-    private IQueryable<ReservaResumen> ConsultarResumenes()
+    private IQueryable<ReservaResumen> ConsultarResumenes(IQueryable<Reserva> consulta)
     {
-        return _context.Reservas
-            .AsNoTracking()
+        return consulta
             .Select(r => new ReservaResumen(
                 r.Id,
                 r.Cliente.Id,
@@ -159,8 +158,10 @@ public class ReservaService
 
         await _context.SaveChangesAsync();
 
-        var resultado = await ConsultarResumenes()
-            .FirstAsync(r => r.Id == reserva.Id);
+        var resultado = await ConsultarResumenes(_context.Reservas
+            .AsNoTracking()
+            .Where(r => r.Id == reserva.Id))
+            .FirstAsync();
 
         await transaction.CommitAsync();
 
@@ -173,8 +174,9 @@ public class ReservaService
         await AutorizacionService.ExigirAdministradorActivoAsync(
             _context, usuarioActual);
 
-        return await ConsultarResumenes()
-            .OrderByDescending(r => r.CreatedAt)
+        return await ConsultarResumenes(_context.Reservas
+            .AsNoTracking()
+            .OrderByDescending(r => r.CreatedAt))
             .ToListAsync();
     }
 
@@ -185,9 +187,10 @@ public class ReservaService
             await AutorizacionService.ExigirClienteActivoAsync(
                 _context, usuarioActual);
 
-        return await ConsultarResumenes()
-            .Where(r => r.ClienteId == clienteId)
-            .OrderByDescending(r => r.CreatedAt)
+        return await ConsultarResumenes(_context.Reservas
+            .AsNoTracking()
+            .Where(r => r.Cliente.Id == clienteId)
+            .OrderByDescending(r => r.CreatedAt))
             .ToListAsync();
     }
 
@@ -198,9 +201,10 @@ public class ReservaService
         await AutorizacionService.ExigirAdministradorActivoAsync(
             _context, usuarioActual);
 
-        return await ConsultarResumenes()
-            .Where(r => r.SesionId == sesionId)
-            .OrderBy(r => r.CreatedAt)
+        return await ConsultarResumenes(_context.Reservas
+            .AsNoTracking()
+            .Where(r => r.Sesion.Id == sesionId)
+            .OrderBy(r => r.CreatedAt))
             .ToListAsync();
     }
 
@@ -213,8 +217,10 @@ public class ReservaService
             await AutorizacionService.ExigirAdministradorActivoAsync(
                 _context, usuarioActual);
 
-            return await ConsultarResumenes()
-                .FirstOrDefaultAsync(r => r.Id == id);
+            return await ConsultarResumenes(_context.Reservas
+            .AsNoTracking()
+            .Where(r => r.Id == id))
+                .FirstOrDefaultAsync();
         }
 
         if (usuarioActual.Tipo == TipoCuentaUsuario.Cliente)
@@ -223,10 +229,10 @@ public class ReservaService
                 await AutorizacionService.ExigirClienteActivoAsync(
                     _context, usuarioActual);
 
-            return await ConsultarResumenes()
-                .FirstOrDefaultAsync(r =>
-                    r.Id == id &&
-                    r.ClienteId == clienteId);
+            return await ConsultarResumenes(_context.Reservas
+            .AsNoTracking()
+            .Where(r => r.Id == id && r.Cliente.Id == clienteId))
+                .FirstOrDefaultAsync();
         }
 
         throw new UnauthorizedAccessException(
