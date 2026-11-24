@@ -2,6 +2,7 @@
 using GenteFit.Data;
 using GenteFit.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Identity.Client;
 
 namespace GenteFit.Services;
 
@@ -40,6 +41,45 @@ public class AutenticacionService
                 TipoCuentaUsuario.Administrador,
                 null);
         }
+
+        var recepcionista = await contexto.Recepcionistas
+            .AsNoTracking()
+            .FirstOrDefaultAsync(r =>
+                r.Username == username && r.Active);
+        
+        if (recepcionista is not null &&
+            SeguridadContrasenas.Verificar(
+                password,
+                recepcionista.Password))
+        {
+            return new UsuarioAutenticado(
+                recepcionista.Id,
+                recepcionista.Username,
+                recepcionista.Name,
+                recepcionista.Surname,
+                TipoCuentaUsuario.Recepcionista,
+                null);
+            
+        }
+
+        var monitor = await contexto.Monitores
+        .AsNoTracking()
+        .FirstOrDefaultAsync (m => m.Username == username && m.Active);
+
+        if (monitor is not null &&
+            SeguridadContrasenas.Verificar(
+                password,
+                monitor.Password))
+        {
+            return new UsuarioAutenticado(
+                monitor.Id,
+                monitor.Username,
+                monitor.Name,
+                monitor.Surname,
+                TipoCuentaUsuario.Monitor,
+                null);
+        }
+
 
         var cliente = await contexto.Clientes
             .AsNoTracking()

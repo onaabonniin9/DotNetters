@@ -4,7 +4,9 @@ namespace GenteFit.Models;
 public enum TipoCuentaUsuario // tipo de cuenta en la app, no hace falta almacenarlo en la bbdd, se obtiene del tipo real del user
 {
     Cliente,
-    Administrador
+    Administrador,
+    Recepcionista,
+    Monitor
 }
 
 public sealed record UsuarioAutenticado(
@@ -24,7 +26,21 @@ public sealed record UsuarioAutenticado(
                 "No tienes permisos para realizar esta operación.");
         }
     }
+    public void ExigirMonitor()
+    {
+        if(Tipo != TipoCuentaUsuario.Monitor)
+        {
+            throw new UnauthorizedAccessException("No tienes permisos para realizar esta operación.");
+        }
+    }
 
+    public void ExigirRecepcionista()
+    {
+        if (Tipo != TipoCuentaUsuario.Recepcionista)
+        {
+            throw new UnauthorizedAccessException("No tienes permisos para realizar esta operación.");
+        }
+    }
     public void ExigirCliente()
     {
         _ = ObtenerClienteId();

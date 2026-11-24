@@ -1,0 +1,142 @@
+<Window x:Class="GenteFit.WPF.DetalleClienteRecepcionWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:componentes="clr-namespace:GenteFit.WPF.Components"
+        Title="GenteFit - Detalle de cliente"
+        Height="800" Width="1024" MinHeight="600" MinWidth="800"
+        WindowStartupLocation="CenterOwner"
+        Background="#8FA9A1" FontFamily="Poppins">
+
+    <Window.Resources>
+        <Style x:Key="Etiqueta" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="#17483D"/>
+            <Setter Property="Margin" Value="0,8,0,2"/>
+        </Style>
+        <Style x:Key="Valor" TargetType="TextBlock">
+            <Setter Property="Background" Value="#C8D1D9"/>
+            <Setter Property="Padding" Value="10,5"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Foreground" Value="#252A27"/>
+            <Setter Property="Margin" Value="0,0,16,0"/>
+        </Style>
+        <Style x:Key="TituloTarjeta" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="#17483D"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="72"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <componentes:CabeceraComun Grid.Row="0" Rol="Recepción"
+                                   Margin="45,12,45,0"/>
+
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <StackPanel MaxWidth="760" Margin="20,10,20,25">
+
+                <!-- Datos del cliente -->
+                <Border Background="#FBF8F1" CornerRadius="6" Padding="22,16">
+                    <StackPanel>
+                        <TextBlock Text="CLIENTE" Style="{StaticResource TituloTarjeta}"/>
+
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="Nombre" Style="{StaticResource Etiqueta}"/>
+                                <TextBlock x:Name="TxtNombre" Style="{StaticResource Valor}"/>
+                                <TextBlock Text="Apellidos" Style="{StaticResource Etiqueta}"/>
+                                <TextBlock x:Name="TxtApellidos" Style="{StaticResource Valor}"/>
+                                <TextBlock Text="Email" Style="{StaticResource Etiqueta}"/>
+                                <TextBlock x:Name="TxtEmail" Style="{StaticResource Valor}"/>
+                                <TextBlock Text="Usuario" Style="{StaticResource Etiqueta}"/>
+                                <TextBlock x:Name="TxtUsuario" Style="{StaticResource Valor}"/>
+                                <TextBlock Text="Teléfono" Style="{StaticResource Etiqueta}"/>
+                                <TextBlock x:Name="TxtTelefono" Style="{StaticResource Valor}"/>
+                                <TextBlock Text="Dirección" Style="{StaticResource Etiqueta}"/>
+                                <TextBlock x:Name="TxtDireccion" Style="{StaticResource Valor}"/>
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="1">
+                                <TextBlock Text="Ciudad" Style="{StaticResource Etiqueta}"/>
+                                <TextBlock x:Name="TxtCiudad" Style="{StaticResource Valor}"/>
+                                <TextBlock Text="Código postal" Style="{StaticResource Etiqueta}"/>
+                                <TextBlock x:Name="TxtCodigoPostal" Style="{StaticResource Valor}"/>
+                                <TextBlock Text="Fecha de nacimiento" Style="{StaticResource Etiqueta}"/>
+                                <TextBlock x:Name="TxtNacimiento" Style="{StaticResource Valor}"/>
+                                <TextBlock Text="DNI" Style="{StaticResource Etiqueta}"/>
+                                <TextBlock x:Name="TxtDni" Style="{StaticResource Valor}"/>
+                                <TextBlock Text="Plan mensual" Style="{StaticResource Etiqueta}"/>
+                                <TextBlock x:Name="TxtPlan" Style="{StaticResource Valor}"/>
+                                <TextBlock Text="IBAN" Style="{StaticResource Etiqueta}"/>
+                                <TextBlock x:Name="TxtIban" Style="{StaticResource Valor}"/>
+                            </StackPanel>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <!-- Botones -->
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center"
+                            Margin="0,14,0,14">
+                    <Button Content="Editar cliente" Width="150" Height="34"
+                            Margin="0,0,10,0" Background="#17483D" Foreground="White"
+                            IsEnabled="False"
+                            ToolTip="Se activará con la pantalla de edición"/>
+                    <Button Content="Baja cliente" Width="150" Height="34"
+                            Margin="0,0,10,0" Background="White" Foreground="#8B0000"
+                            Click="BtnBaja_Click"/>
+                    <Button Content="Volver" Width="110" Height="34"
+                            Click="BtnVolver_Click"/>
+                </StackPanel>
+
+                <!-- Pagos -->
+                <Border Background="#FBF8F1" CornerRadius="6" Padding="22,16">
+                    <StackPanel>
+                        <TextBlock Text="PAGOS" Style="{StaticResource TituloTarjeta}"
+                                   Margin="0,0,0,8"/>
+
+                        <TextBlock x:Name="TxtSinPagos" Text="Este cliente aún no tiene pagos."
+                                   Foreground="#252A27" FontSize="13"
+                                   Visibility="Collapsed"/>
+
+                        <ItemsControl x:Name="ListaPagos">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Background="#C8D1D9" Padding="12,8" Margin="0,0,0,6">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="90"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="110"/>
+                                                <ColumnDefinition Width="100"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <TextBlock Grid.Column="0" Text="{Binding Importe}"
+                                                       FontWeight="Bold" FontSize="13"/>
+                                            <TextBlock Grid.Column="1" Text="{Binding Concepto}"
+                                                       FontSize="13"/>
+                                            <TextBlock Grid.Column="2" Text="{Binding Estado}"
+                                                       Foreground="{Binding ColorEstado}"
+                                                       FontWeight="Bold" FontSize="13"/>
+                                            <TextBlock Grid.Column="3" Text="{Binding Fecha}"
+                                                       FontSize="13"/>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</Window>

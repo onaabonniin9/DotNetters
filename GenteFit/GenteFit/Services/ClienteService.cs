@@ -1,4 +1,5 @@
 ﻿
+using System.Drawing;
 using GenteFit.Data;
 using GenteFit.Models;
 using Microsoft.EntityFrameworkCore;
@@ -40,6 +41,79 @@ public class ClienteService
             .OrderBy(c => c.Surname)
             .ThenBy(c => c.Name)
             .ToListAsync();
+    }
+
+    public async Task<List<Cliente>> ConsultarParaRecepcionAsync(
+        UsuarioAutenticado usuarioActual,
+        string? texto = null)
+    {
+        await AutorizacionService.ExigirPersonalRecepcionActivoAsync(
+            _context, usuarioActual);
+        
+        IQueryable<Cliente> consulta=_context.Clientes.AsNoTracking();
+        if (!string.IsNullOrWhiteSpace(texto))
+        {
+            string t = texto.Trim();
+            
+            consulta = consulta.Where(c =>
+                c.Name.Contains(t) || 
+                c.Surname.Contains(t) ||
+                c.Username.Contains(t) ||
+                c.DNI.Contains(t) ||
+                c.Email.Contains(t));
+        }
+
+        return await consulta
+        .OrderBy(c => c.Surname)
+        .ThenBy(c => c.Name)
+        .ToListAsync();
+    }
+
+   //Pantalla 12, datos del cliente
+
+   public async Task<DetalleClienteRecepcion?> ConsultarDetalleParaRecepcionAsync(
+    UsuarioAutenticado usuarioActual, int clienteId)
+    {
+        await AutorizacionService.ExigirPersonalRecepcionActivoAsync(_context, usuarioActual);
+
+        Cliente? cliente = await _context.Clientes
+        .AsNoTracking()
+        .FirstOrDefaultAsync(c=> c.Id == clienteId);
+
+        if (cliente is null)
+            return null;
+
+            string? plan = await _context.Suscripciones
+            .AsNoTracking()
+            .Where(s => s.Cliente.Id == clienteId && s.Status == EstadoSuscripcion.ACTIVA)
+            .Select(s => s.PlanMensual.Name)
+            .FirstOrDefaultAsync();
+
+            List<Pago>pagos = await _context.Pagos
+            .AsNoTracking()
+            .Where(p => p.Suscripcion.Cliente.Id == clienteId)
+            .OrderByDescending(p => p.PaymentDate)
+            .ToListAsync();
+
+            return new DetalleClienteRecepcion(cliente, plan, pagos);
+        
+    }
+
+    public async Task<bool> DarDeBajaParaRecepcionAsync(UsuarioAutenticado usuarioActual, int clienteId)
+    {
+        await AutorizacionService.ExigirPersonalRecepcionActivoAsync(_context, usuarioActual);
+        
+        Cliente? cliente = await _context.Clientes
+        .FirstOrDefaultAsync(c => c.Id == clienteId);
+
+        if (cliente is null || !cliente.Active)
+        return false;
+
+        cliente.Active = false;
+
+        await _context.SaveChangesAsync();
+
+        return true;
     }
 
     public async Task<Cliente?> ConsultarPorIdAsync(int id)

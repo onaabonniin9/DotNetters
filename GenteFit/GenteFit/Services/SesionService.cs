@@ -1,479 +1,123 @@
+int id,
+UsuarioAutenticado usuarioActual)
+    {
+        await AutorizacionService.ExigirAdministradorActivoAsync(
+            _context,
+    usuarioActual);
 
-using System.Data;
-using GenteFit.Data;
-using GenteFit.Models;
-using Microsoft.EntityFrameworkCore;
+await using var transaction =
+    await _context.Database.BeginTransactionAsync(
+        IsolationLevel.Serializable);
 
-namespace GenteFit.Services;
+var sesion = await _context.Sesiones
+    .FirstOrDefaultAsync(s => s.Id == id);
 
-public sealed record DisponibilidadSesion(
-    int SesionId,
-    int CapacidadMaxima,
-    int ReservasConfirmadas,
-    int PlazasLibres,
-    int PersonasEnEspera);
+if (sesion is null ||
+    sesion.Status != EstadoSesion.PROGRAMADA)
+    return false;
 
-public class SesionService
+sesion.Status = EstadoSesion.CANCELADA;
+
+var reservas = await _context.Reservas
+    .Where(r =>
+        r.Sesion.Id == id &&
+        r.Status == EstadoReserva.CONFIRMADA)
+    .ToListAsync();
+
+foreach (var reserva in reservas)
 {
-    private readonly GenteFitContext _context;
+    reserva.Status = EstadoReserva.CANCELADA_POR_CENTRO;
+    reserva.CancelledAt = DateTime.UtcNow;
+}
 
-    public SesionService(GenteFitContext context)
-    {
-        ArgumentNullException.ThrowIfNull(context);
-        _context = context;
+var entradas = await _context.ListasEspera
+    .Where(l =>
+        l.Sesion.Id == id &&
+        l.Status == EstadoListaEspera.EN_ESPERA)
+    .ToListAsync();
+
+foreach (var entrada in entradas)
+{
+    entrada.Status = EstadoListaEspera.RETIRADO;
+}
+
+await _context.SaveChangesAsync();
+await transaction.CommitAsync();
+
+return true;
+
     }
+    
+    public async Task<List<Sesion>> ConsultarPorRangoAsync(
+        DateOnly desde, DateOnly hasta, UsuarioAutenticado usuarioActual)
+{
+    await ExigirPermisoConsultaAsync(usuarioActual);
 
-    private static void ValidarDatos(
-        TimeOnly horaInicio,
-        TimeOnly horaFin,
-        int maxParticipants)
-    {
-        if (horaFin <= horaInicio)
-            throw new ArgumentException(
-                "La hora de finalización debe ser posterior a la hora de inicio.");
+    var consulta = _context.Sesiones
+        .AsNoTracking()
+        .Include(s => s.Monitor)
+        .Include(s => s.Sala)
+        .Include(s => s.Actividad)
+        .Where(s => s.Date >= desde && s.Date <= hasta);
 
-        if (maxParticipants <= 0)
-            throw new ArgumentException(
-                "El número máximo de participantes debe ser mayor que cero.");
-    }
+    if (usuarioActual.Tipo == TipoCuentaUsuario.Monitor)
+        consulta = consulta.Where(s => s.Monitor.Id == usuarioActual.UsuarioId);
 
-    private static bool EsFutura(Sesion sesion)
-    {
-        DateOnly hoy = DateOnly.FromDateTime(DateTime.Now);
-        TimeOnly ahora = TimeOnly.FromDateTime(DateTime.Now);
+    return await consulta
+    .OrderBy(s => s.Date)
+    .ThenBy(s => s.HourStart)
+    .ToListAsync();
+}
 
-        return sesion.Date > hoy ||
-               (sesion.Date == hoy && sesion.HourStart > ahora);
-    }
+public async Task<List<Reserva>> ConsultarReservasConfirmadasAsync(int sesionId, UsuarioAutenticado usuarioActual)
+{
+    await ExigirPermisoConsultaAsync(usuarioActual);
 
-    private async Task ExigirPermisoConsultaAsync(
-        UsuarioAutenticado usuarioActual)
-    {
-        ArgumentNullException.ThrowIfNull(usuarioActual);
+    var consulta = _context.Reservas
+        .AsNoTracking()
+        .Include(r => r.Cliente)
+        .Where(r => r.Sesion.Id == sesionId &&
+                    r.Status == EstadoReserva.CONFIRMADA);
 
-        switch (usuarioActual.Tipo)
-        {
-            case TipoCuentaUsuario.Administrador:
-                await AutorizacionService.ExigirAdministradorActivoAsync(
-                    _context,
-                    usuarioActual);
-                break;
+    if (usuarioActual.Tipo == TipoCuentaUsuario.Monitor)
+        consulta = consulta.Where(r => r.Sesion.Monitor.Id == usuarioActual.UsuarioId);
 
-            case TipoCuentaUsuario.Cliente:
-                await AutorizacionService.ExigirClienteActivoAsync(
-                    _context,
-                    usuarioActual);
-                break;
+    return await consulta.OrderBy(r => r.CreatedAt).ToListAsync();
+}
 
-            default:
-                throw new UnauthorizedAccessException(
-                    "No tienes permisos para consultar sesiones.");
-        }
-    }
+public async Task<bool> ReprogramarAsync(
+    int id,
+    UsuarioAutenticado usuarioActual)
+{
+    await AutorizacionService.ExigirAdministradorActivoAsync(
+        _context,
+        usuarioActual);
 
-    public async Task<Sesion> CrearAsync(
-        Sesion sesion,
-        UsuarioAutenticado usuarioActual)
-    {
-        await AutorizacionService.ExigirAdministradorActivoAsync(
-            _context,
-            usuarioActual);
+    var sesion = await _context.Sesiones
+        .Include(s => s.Monitor)
+        .Include(s => s.Sala)
+        .Include(s => s.Actividad)
+        .FirstOrDefaultAsync(s => s.Id == id);
 
-        ArgumentNullException.ThrowIfNull(sesion);
+    if (sesion is null || sesion.Status != EstadoSesion.CANCELADA)
+        return false;
 
-        ValidarDatos(
-            sesion.HourStart,
-            sesion.HourEnd,
-            sesion.MaxParticipants);
-
-        if (sesion.Status != EstadoSesion.PROGRAMADA)
-            throw new InvalidOperationException(
-                "Una nueva sesión debe estar programada.");
-
-        if (!EsFutura(sesion))
-            throw new InvalidOperationException(
-                "No se puede programar una sesión en una fecha u hora pasada.");
-
-        if (sesion.Monitor is null ||
-            sesion.Sala is null ||
-            sesion.Actividad is null)
-            throw new ArgumentException(
-                "La sesión debe tener un monitor, una sala y una actividad.");
-
-        var monitor = await _context.Monitores
-            .FindAsync(sesion.Monitor.Id);
-
-        if (monitor is null)
-            throw new ArgumentException(
-                "El monitor indicado no existe.");
-
-        if (!monitor.Active)
+    if (!EsFutura(sesion))
         throw new InvalidOperationException(
-            "No se puede programar una sesión con un monitor inactivo.");
-
-        var sala = await _context.Salas
-            .FindAsync(sesion.Sala.Id);
-
-        if (sala is null)
-            throw new ArgumentException(
-                "La sala indicada no existe.");
-
-        var actividad = await _context.Actividades
-            .FindAsync(sesion.Actividad.Id);
-
-        if (actividad is null)
-            throw new ArgumentException(
-                "La actividad indicada no existe.");
-
-        if (!sala.Active)
-            throw new InvalidOperationException(
-                "No se puede programar una sesión en una sala inactiva.");
-
-        if (!actividad.Active)
-            throw new InvalidOperationException(
-                "No se puede programar una actividad inactiva.");
-
-        if (sesion.MaxParticipants > sala.Capacity)
-            throw new InvalidOperationException(
-                "El número máximo de participantes no puede superar la capacidad de la sala.");
-
-        sesion.Monitor = monitor;
-        sesion.Sala = sala;
-        sesion.Actividad = actividad;
-
-        _context.Sesiones.Add(sesion);
-
-        await _context.SaveChangesAsync();
-
-        return sesion;
-    }
-
-    public async Task<List<Sesion>> ConsultarTodasAsync(
-        UsuarioAutenticado usuarioActual)
-    {
-        await ExigirPermisoConsultaAsync(usuarioActual);
-
-        var consulta = _context.Sesiones
-            .AsNoTracking()
-            .Include(s => s.Monitor)
-            .Include(s => s.Sala)
-            .Include(s => s.Actividad)
-            .AsQueryable();
-
-        if (usuarioActual.Tipo == TipoCuentaUsuario.Cliente)
-        {
-            DateOnly hoy = DateOnly.FromDateTime(DateTime.Now);
-            TimeOnly ahora = TimeOnly.FromDateTime(DateTime.Now);
-
-            consulta = consulta.Where(s =>
-                s.Status == EstadoSesion.PROGRAMADA &&
-                (s.Date > hoy ||
-                 (s.Date == hoy && s.HourStart > ahora)));
-        }
-
-        return await consulta
-            .OrderBy(s => s.Date)
-            .ThenBy(s => s.HourStart)
-            .ToListAsync();
-    }
-
-    public async Task<Sesion?> ConsultarPorIdAsync(
-        int id,
-        UsuarioAutenticado usuarioActual)
-    {
-        await ExigirPermisoConsultaAsync(usuarioActual);
-
-        var consulta = _context.Sesiones
-            .AsNoTracking()
-            .Include(s => s.Monitor)
-            .Include(s => s.Sala)
-            .Include(s => s.Actividad)
-            .Where(s => s.Id == id);
-
-        if (usuarioActual.Tipo == TipoCuentaUsuario.Cliente)
-        {
-            DateOnly hoy = DateOnly.FromDateTime(DateTime.Now);
-            TimeOnly ahora = TimeOnly.FromDateTime(DateTime.Now);
-
-            consulta = consulta.Where(s =>
-                s.Status == EstadoSesion.PROGRAMADA &&
-                (s.Date > hoy ||
-                 (s.Date == hoy && s.HourStart > ahora)));
-        }
-
-        return await consulta.FirstOrDefaultAsync();
-    }
-    public async Task<IReadOnlyDictionary<int, DisponibilidadSesion>> ConsultarDisponibilidadAsync(
-        IEnumerable<int> sesionIds,
-        UsuarioAutenticado usuarioActual)
-    {
-        ArgumentNullException.ThrowIfNull(sesionIds);
-        await ExigirPermisoConsultaAsync(usuarioActual);
-
-        int[] idsSolicitados = sesionIds
-            .Where(id => id > 0)
-            .Distinct()
-            .ToArray();
-
-        if (idsSolicitados.Length == 0)
-            return new Dictionary<int, DisponibilidadSesion>();
-
-        var consultaSesiones = _context.Sesiones
-            .AsNoTracking()
-            .Where(s => idsSolicitados.Contains(s.Id));
-
-        if (usuarioActual.Tipo == TipoCuentaUsuario.Cliente)
-        {
-            DateOnly hoy = DateOnly.FromDateTime(DateTime.Now);
-            TimeOnly ahora = TimeOnly.FromDateTime(DateTime.Now);
-
-            consultaSesiones = consultaSesiones.Where(s =>
-                s.Status == EstadoSesion.PROGRAMADA &&
-                (s.Date > hoy || (s.Date == hoy && s.HourStart > ahora)));
-        }
-
-        var capacidades = await consultaSesiones
-            .Select(s => new
-            {
-                SesionId = s.Id,
-                Capacidad = s.MaxParticipants
-            })
-            .ToListAsync();
-
-        int[] idsAutorizados = capacidades
-            .Select(s => s.SesionId)
-            .ToArray();
-
-        if (idsAutorizados.Length == 0)
-            return new Dictionary<int, DisponibilidadSesion>();
-
-        var reservasPorSesion = await _context.Reservas
-            .AsNoTracking()
-            .Where(r =>
-                idsAutorizados.Contains(r.Sesion.Id) &&
-                r.Status == EstadoReserva.CONFIRMADA)
-            .GroupBy(r => r.Sesion.Id)
-            .Select(g => new
-            {
-                SesionId = g.Key,
-                Total = g.Count()
-            })
-            .ToDictionaryAsync(x => x.SesionId, x => x.Total);
-
-        var esperaPorSesion = await _context.ListasEspera
-            .AsNoTracking()
-            .Where(l =>
-                idsAutorizados.Contains(l.Sesion.Id) &&
-                l.Status == EstadoListaEspera.EN_ESPERA)
-            .GroupBy(l => l.Sesion.Id)
-            .Select(g => new
-            {
-                SesionId = g.Key,
-                Total = g.Count()
-            })
-            .ToDictionaryAsync(x => x.SesionId, x => x.Total);
-
-        var resultado = new Dictionary<int, DisponibilidadSesion>();
-
-        foreach (var sesion in capacidades)
-        {
-            reservasPorSesion.TryGetValue(sesion.SesionId, out int confirmadas);
-            esperaPorSesion.TryGetValue(sesion.SesionId, out int personasEnEspera);
-
-            int capacidad = Math.Max(0, sesion.Capacidad);
-            int plazasLibres = Math.Max(0, capacidad - confirmadas);
-
-            resultado[sesion.SesionId] = new DisponibilidadSesion(
-                sesion.SesionId,
-                capacidad,
-                confirmadas,
-                plazasLibres,
-                personasEnEspera);
-        }
-
-        return resultado;
-    }
-
-    public async Task<bool> ActualizarAsync(
-        int id,
-        DateOnly fecha,
-        TimeOnly horaInicio,
-        TimeOnly horaFin,
-        int maxParticipants,
-        UsuarioAutenticado usuarioActual)
-    {
-        await AutorizacionService.ExigirAdministradorActivoAsync(
-            _context,
-            usuarioActual);
-
-        ValidarDatos(horaInicio, horaFin, maxParticipants);
-
-        DateOnly hoy = DateOnly.FromDateTime(DateTime.Now);
-        TimeOnly ahora = TimeOnly.FromDateTime(DateTime.Now);
-
-        if (fecha < hoy ||
-            (fecha == hoy && horaInicio <= ahora))
-            throw new InvalidOperationException(
-                "La sesión debe tener una fecha y hora futuras.");
-
-        var sesion = await _context.Sesiones
-            .Include(s => s.Sala)
-            .FirstOrDefaultAsync(s => s.Id == id);
-
-        if (sesion is null)
-            return false;
-
-        if (sesion.Status != EstadoSesion.PROGRAMADA)
-            throw new InvalidOperationException(
-                "Solo se pueden modificar sesiones programadas.");
-
-        if (maxParticipants > sesion.Sala.Capacity)
-            throw new InvalidOperationException(
-                "El número máximo de participantes no puede superar la capacidad de la sala.");
-
-        int reservasConfirmadas = await _context.Reservas.CountAsync(r =>
-            r.Sesion.Id == id &&
-            r.Status == EstadoReserva.CONFIRMADA);
-
-        if (maxParticipants > sesion.MaxParticipants)
-        {
-            bool hayListaEsperaPendiente = await _context.ListasEspera
-                .AnyAsync(l =>
-                    l.Sesion.Id == id &&
-                    l.Status == EstadoListaEspera.EN_ESPERA);
-
-            if (hayListaEsperaPendiente)
-            {
-                throw new InvalidOperationException(
-                    "No se puede ampliar la capacidad de una sesión " +
-                    "mientras haya clientes en lista de espera. " +
-                    "Debe gestionarse primero la lista de espera.");
-            }
-        }
-        
-        sesion.Date = fecha;
-        sesion.HourStart = horaInicio;
-        sesion.HourEnd = horaFin;
-        sesion.MaxParticipants = maxParticipants;
-
-        await _context.SaveChangesAsync();
-
-        return true;
-    }
-
-    public async Task<bool> EliminarAsync(
-        int id,
-        UsuarioAutenticado usuarioActual)
-    {
-        await AutorizacionService.ExigirAdministradorActivoAsync(
-            _context,
-            usuarioActual);
-
-        var sesion = await _context.Sesiones
-            .FirstOrDefaultAsync(s => s.Id == id);
-
-        if (sesion is null)
-            return false;
-
-        bool tieneReservas = await _context.Reservas
-            .AnyAsync(r => r.Sesion.Id == id);
-
-        bool tieneListaEspera = await _context.ListasEspera
-            .AnyAsync(l => l.Sesion.Id == id);
-
-        if (tieneReservas || tieneListaEspera)
-            throw new InvalidOperationException(
-                "No se puede eliminar una sesión que tiene reservas o entradas de lista de espera. Debe cancelarse para conservar su historial.");
-
-        _context.Sesiones.Remove(sesion);
-
-        await _context.SaveChangesAsync();
-
-        return true;
-    }
-
-    public async Task<bool> CancelarAsync(
-        int id,
-        UsuarioAutenticado usuarioActual)
-    {
-        await AutorizacionService.ExigirAdministradorActivoAsync(
-            _context,
-            usuarioActual);
-
-        await using var transaction =
-            await _context.Database.BeginTransactionAsync(
-                IsolationLevel.Serializable);
-
-        var sesion = await _context.Sesiones
-            .FirstOrDefaultAsync(s => s.Id == id);
-
-        if (sesion is null ||
-            sesion.Status != EstadoSesion.PROGRAMADA)
-            return false;
-
-        sesion.Status = EstadoSesion.CANCELADA;
-
-        var reservas = await _context.Reservas
-            .Where(r =>
-                r.Sesion.Id == id &&
-                r.Status == EstadoReserva.CONFIRMADA)
-            .ToListAsync();
-
-        foreach (var reserva in reservas)
-        {
-            reserva.Status = EstadoReserva.CANCELADA_POR_CENTRO;
-            reserva.CancelledAt = DateTime.UtcNow;
-        }
-
-        var entradas = await _context.ListasEspera
-            .Where(l =>
-                l.Sesion.Id == id &&
-                l.Status == EstadoListaEspera.EN_ESPERA)
-            .ToListAsync();
-
-        foreach (var entrada in entradas)
-        {
-            entrada.Status = EstadoListaEspera.RETIRADO;
-        }
-
-        await _context.SaveChangesAsync();
-        await transaction.CommitAsync();
-
-        return true;
-    }
-    public async Task<bool> ReprogramarAsync(
-        int id,
-        UsuarioAutenticado usuarioActual)
-    {
-        await AutorizacionService.ExigirAdministradorActivoAsync(
-            _context,
-            usuarioActual);
-
-        var sesion = await _context.Sesiones
-            .Include(s => s.Monitor)
-            .Include(s => s.Sala)
-            .Include(s => s.Actividad)
-            .FirstOrDefaultAsync(s => s.Id == id);
-
-        if (sesion is null || sesion.Status != EstadoSesion.CANCELADA)
-            return false;
-
-        if (!EsFutura(sesion))
-            throw new InvalidOperationException(
-                "No se puede reprogramar una sesión con fecha u hora pasada.");
-
-        if (!sesion.Monitor.Active || !sesion.Sala.Active || !sesion.Actividad.Active)
-            throw new InvalidOperationException(
-                "No se puede reprogramar la sesión porque su monitor, sala o actividad están inactivos.");
-
-        if (sesion.MaxParticipants > sesion.Sala.Capacity)
-            throw new InvalidOperationException(
-                "La capacidad de la sesión supera la capacidad actual de la sala.");
-
-        // Las reservas canceladas y las entradas retiradas conservan su estado histórico.
-        sesion.Status = EstadoSesion.PROGRAMADA;
-        await _context.SaveChangesAsync();
-        return true;
-    }
+            "No se puede reprogramar una sesión con fecha u hora pasada.");
+
+    if (!sesion.Monitor.Active || !sesion.Sala.Active || !sesion.Actividad.Active)
+        throw new InvalidOperationException(
+            "No se puede reprogramar la sesión porque su monitor, sala o actividad están inactivos.");
+
+    if (sesion.MaxParticipants > sesion.Sala.Capacity)
+        throw new InvalidOperationException(
+            "La capacidad de la sesión supera la capacidad actual de la sala.");
+
+    // Las reservas canceladas y las entradas retiradas conservan su estado histórico.
+    sesion.Status = EstadoSesion.PROGRAMADA;
+    await _context.SaveChangesAsync();
+    return true;
+}
 
 }
