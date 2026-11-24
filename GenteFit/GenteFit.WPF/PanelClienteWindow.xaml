@@ -101,5 +101,5 @@
             </Button>
 
         </StackPanel>
-    <componentes:CabeceraComun Grid.Row="0" Rol="Cliente"/></Grid>
+    </Grid>
 </Window>

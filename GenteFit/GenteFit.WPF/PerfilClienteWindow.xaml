@@ -125,5 +125,5 @@
                 <Grid Margin="0,0,0,20"><Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions><Button Content="Cerrar sesión" Width="190" Height="48" HorizontalAlignment="Left" Background="#A52020" Foreground="White" Style="{StaticResource BotonPerfil}" Margin="0" Click="CerrarSesion_Click" Grid.Column="0"/>
             <Button Content="Cerrar" Width="160" Height="48" Grid.Column="1" HorizontalAlignment="Right" Background="#17483D" Foreground="White" Style="{StaticResource BotonPerfil}" Click="MenuButton_Click"/></Grid></StackPanel>
         </ScrollViewer>
-    <componentes:CabeceraComun Grid.Row="0" Rol="Cliente" Margin="30,12"/></Grid>
+    </Grid>
 </Window>
