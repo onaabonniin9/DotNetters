@@ -102,4 +102,26 @@ public class PagoService
         return true;
     }
 
+    public async Task<List<Pago>> ConsultarPagosDeMiPerfilAsync(
+    UsuarioAutenticado usuario)
+    {
+        if (usuario is null)
+            throw new ArgumentNullException(nameof(usuario));
+
+        int clienteId =
+            await AutorizacionService.ExigirClienteActivoAsync(
+                _context,
+                usuario);
+
+        return await _context.Pagos
+            .AsNoTracking()
+            .Where(p => p.Suscripcion.Cliente.Id == clienteId)
+            .Include(p => p.Suscripcion)
+                .ThenInclude(s => s.PlanMensual)
+            .OrderByDescending(p => p.PaymentDate)
+            .ToListAsync();
+    }
+
 }
+
+

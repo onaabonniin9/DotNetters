@@ -1,5 +1,7 @@
-
 using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -16,6 +18,7 @@ namespace GenteFit.WPF
         private readonly UsuarioAutenticado _usuarioAutenticado;
         private readonly GenteFitContext _context;
         private readonly ClienteService _clienteService;
+        private readonly PagoService _pagoService;
 
         private Cliente? _clienteActual;
         private bool _modoEdicion;
@@ -33,6 +36,7 @@ namespace GenteFit.WPF
             _context = factory.CreateDbContext(Array.Empty<string>());
 
             _clienteService = new ClienteService(_context);
+            _pagoService = new PagoService(_context);
 
             Loaded += PerfilClienteWindow_Loaded;
             Closed += PerfilClienteWindow_Closed;
@@ -73,6 +77,8 @@ namespace GenteFit.WPF
                 }
 
                 MostrarDatosCliente(_clienteActual);
+
+                await CargarPagosAsync();
             }
             catch (UnauthorizedAccessException)
             {
@@ -92,6 +98,101 @@ namespace GenteFit.WPF
                     MessageBoxButton.OK,
                     MessageBoxImage.Error);
             }
+        }
+
+        private async Task CargarPagosAsync()
+        {
+            try
+            {
+                List<Pago> pagos =
+                    await _pagoService.ConsultarPagosDeMiPerfilAsync(
+                        _usuarioAutenticado);
+
+                var pagosVisuales = pagos
+                    .Select(CrearElementoPago)
+                    .ToList();
+
+                ItemsPagos.ItemsSource = pagosVisuales;
+
+                bool hayPagos = pagosVisuales.Count > 0;
+
+                ItemsPagos.Visibility = hayPagos
+                    ? Visibility.Visible
+                    : Visibility.Collapsed;
+
+                TxtSinPagos.Visibility = hayPagos
+                    ? Visibility.Collapsed
+                    : Visibility.Visible;
+
+                TxtErrorPagos.Visibility = Visibility.Collapsed;
+            }
+            catch (UnauthorizedAccessException)
+            {
+                MessageBox.Show(
+                    "Tu cuenta no está activa o no tienes permisos para consultar los pagos.",
+                    "Acceso denegado",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
+
+                CerrarSesion();
+            }
+            catch (Exception)
+            {
+                ItemsPagos.ItemsSource = null;
+                ItemsPagos.Visibility = Visibility.Collapsed;
+                TxtSinPagos.Visibility = Visibility.Collapsed;
+
+                TxtErrorPagos.Text =
+                    "No se han podido cargar los pagos. Inténtalo de nuevo más tarde.";
+
+                TxtErrorPagos.Visibility = Visibility.Visible;
+            }
+        }
+
+        private static PagoPerfilItem CrearElementoPago(Pago pago)
+        {
+            CultureInfo cultura = CultureInfo.GetCultureInfo("es-ES");
+
+            string fechaPagado = pago.Status == EstadoPago.PAGADO
+                ? pago.PaymentDate.ToString("dd/MM/yyyy", cultura)
+                : "—";
+
+            return new PagoPerfilItem
+            {
+                ImporteTexto = pago.Amount.ToString("C2", cultura),
+
+                Concepto = pago.Suscripcion?.PlanMensual?.Name
+                    ?? "Suscripción",
+
+                Estado = pago.Status.ToString(),
+
+                EstadoColor = ObtenerColorEstado(pago.Status),
+
+                FechaPagadoTexto = fechaPagado
+            };
+        }
+
+        private static Brush ObtenerColorEstado(EstadoPago estado)
+        {
+            return estado switch
+            {
+                EstadoPago.PAGADO =>
+                    new SolidColorBrush(Color.FromRgb(23, 72, 61)),
+
+                EstadoPago.PENDIENTE =>
+                    new SolidColorBrush(Color.FromRgb(166, 90, 0)),
+
+                EstadoPago.PROCESANDO =>
+                    new SolidColorBrush(Color.FromRgb(39, 102, 120)),
+
+                EstadoPago.FALLIDO =>
+                    new SolidColorBrush(Color.FromRgb(180, 35, 24)),
+
+                EstadoPago.CANCELADO =>
+                    new SolidColorBrush(Color.FromRgb(101, 117, 110)),
+
+                _ => Brushes.Gray
+            };
         }
 
         private void MostrarDatosCliente(Cliente cliente)
@@ -356,18 +457,28 @@ namespace GenteFit.WPF
             mainWindow.Show();
             Close();
         }
-        private void Cabecera_InicioSolicitado(object sender, EventArgs e)
+
+        private void Cabecera_InicioSolicitado(object? sender, EventArgs e)
         {
-            var panel = new PanelClienteWindow(_usuarioAutenticado);
-            NavegacionCliente.AbrirDesde(this, panel);
+            VolverAlPanelCliente();
         }
 
-        private void Cabecera_CerrarSesionSolicitado(object sender, EventArgs e)
+        private void Cabecera_CerrarSesionSolicitado(object? sender, EventArgs e)
         {
-            var inicio = new MainWindow();
-            inicio.Show();
-            Close();
+            CerrarSesion();
         }
 
+        private sealed class PagoPerfilItem
+        {
+            public string ImporteTexto { get; set; } = string.Empty;
+
+            public string Concepto { get; set; } = string.Empty;
+
+            public string Estado { get; set; } = string.Empty;
+
+            public Brush EstadoColor { get; set; } = Brushes.Gray;
+
+            public string FechaPagadoTexto { get; set; } = string.Empty;
+        }
     }
 }
