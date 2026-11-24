@@ -371,7 +371,11 @@ namespace GenteFit.WPF
         {
             MostrarInicio();
         }
-
+        private void MenuClientesXml_Click(object sender, RoutedEventArgs e)
+        {
+            var ventanaXml = new ClientesXmlWindow { Owner = this };
+            ventanaXml.ShowDialog();
+        }
         private void MenuCerrarSesion_Click(
             object sender, RoutedEventArgs e)
         {
