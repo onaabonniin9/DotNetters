@@ -12,8 +12,6 @@ public class UsuarioConfiguration : IEntityTypeConfiguration<Usuario>
         // Tabla principal y estrategia de herencia
         builder.UseTptMappingStrategy();
         builder.ToTable("usuarios");
-
-        // Clave primaria
         builder.HasKey(u => u.Id);
 
         // Datos personales
